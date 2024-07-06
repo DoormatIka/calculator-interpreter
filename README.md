@@ -30,6 +30,12 @@ p sqrt(4)^2; // 4
 - Log, Log2, Log10 `log(5); log2(5); log10(5);`
 - Max, Min of two numbers `max(5, 10); min(1, 0);` // might make this into its own syntax `5>10`?
 
+## Missing Features
+- Algebra `simplify "x^2 + 5 = 0";`
+- Graphing `graph "6^2";`
+- Calculus `derive "x^6"` `integrate "x^6"` (big question mark here.)
+- Chaining `graph derive simplify "x^2 + 5 = 0";`
+
 ## Improvements
 - Misspellings should be detected. "Did you mean [variable name]?"
 
@@ -49,7 +55,6 @@ I'm not dealing with that. >_>
 
 Calculator is fast enough already. (I have no proper benchmarks to back this up.)
 
-Note #1:
 
 A weird quirk of this is it treats variables as an identifier and checks at runtime if its a function or value.
 
