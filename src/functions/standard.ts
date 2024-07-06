@@ -24,3 +24,99 @@ export class Abs extends Callable {
 		return Math.abs(args[0])
 	};
 }
+
+export class Ceiling extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.ceil(args[0]);
+    };
+}
+
+export class Floor extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.floor(args[0]);
+    };
+}
+
+export class Round extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.round(args[0]);
+    };
+}
+
+export class Signum extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.sign(args[0]);
+    };
+}
+
+export class Maximum extends Callable {
+    public arity: number = 2; 
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.max(args[0], args[1]);
+    };
+}
+
+export class Minimum extends Callable {
+    public arity: number = 2; 
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.min(args[0], args[1]);
+    };
+}
+
+export class HyperbolicSine extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.sinh(args[0]);
+    };
+}
+
+export class HyperbolicCosine extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.cosh(args[0]);
+    };
+}
+
+export class HyperbolicTangent extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.tanh(args[0]);
+    };
+}
+
+export class InverseHyperbolicSine extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.asinh(args[0]);
+    };
+}
+
+export class InverseHyperbolicCosine extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.acosh(args[0]);
+    };
+}
+
+export class InverseHyperbolicTangent extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.atanh(args[0]);
+    };
+}

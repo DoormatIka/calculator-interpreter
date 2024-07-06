@@ -8,7 +8,7 @@ import {Tokenizer} from "./lib/scanner.js";
 import {CalcError, ParseError, RuntimeError, Stdout} from "./lib/error.js";
 import {Callable} from "./lib/expr.js";
 import {Cosine, Log, Sine, Tangent, Base2Log, Base10Log} from "./functions/trig.js";
-import {Abs, Clock, Sqrt} from "./functions/standard.js";
+import {Abs, Clock, Sqrt, Ceiling, Floor, Round, Signum, Maximum, Minimum, HyperbolicCosine, HyperbolicSine, HyperbolicTangent, InverseHyperbolicCosine, InverseHyperbolicSine, InverseHyperbolicTangent } from "./functions/standard.js";
 
 import fs from "node:fs";
 
@@ -38,7 +38,19 @@ async function run_cli() {
 		.add_global("sqrt", new Sqrt())
 		.add_global("abs", new Abs())
 		.add_global("pi", Math.PI)
-		.add_global("e", Math.E);
+		.add_global("e", Math.E)
+		.add_global("ceil", new Ceiling())
+		.add_global("floor", new Floor())
+		.add_global("round", new Round())
+		.add_global("signum", new Signum())
+		.add_global("max", new Maximum())
+		.add_global("min", new Minimum())
+		.add_global("cosh", new HyperbolicCosine())
+		.add_global("sinh", new HyperbolicSine())
+		.add_global("tanh", new HyperbolicTangent())
+		.add_global("acosh", new InverseHyperbolicCosine())
+		.add_global("asinh", new InverseHyperbolicSine())
+		.add_global("atanh", new InverseHyperbolicTangent());
 
 	const printer = new ASTPrinter();
 
