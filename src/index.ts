@@ -7,7 +7,7 @@ import {RecursiveDescentParser} from "./lib/parser.js";
 import {Tokenizer} from "./lib/scanner.js";
 import {CalcError, ParseError, RuntimeError, Stdout} from "./lib/error.js";
 import {Callable} from "./lib/expr.js";
-import {Cosine, Log, Sine, Tangent, Base2Log, Base10Log, HyperbolicCosine, HyperbolicSine, HyperbolicTangent, InverseHyperbolicCosine, InverseHyperbolicSine, InverseHyperbolicTangent} from "./functions/trig.js";
+import {Cosine, Log, Sine, Tangent, Base2Log, Base10Log, HyperbolicCosine, HyperbolicSine, HyperbolicTangent, InverseHyperbolicCosine, InverseHyperbolicSine, InverseHyperbolicTangent, InverseSine, InverseCosine, InverseTangent} from "./functions/trig.js";
 import {Abs, Clock, Sqrt, Ceiling, Floor, Round, Signum, Maximum, Minimum } from "./functions/standard.js";
 
 import fs from "node:fs";
@@ -45,6 +45,9 @@ async function run_cli() {
 		.add_global("signum", new Signum())
 		.add_global("max", new Maximum())
 		.add_global("min", new Minimum())
+		.add_global("asin", new InverseSine())
+		.add_global("acos", new InverseCosine())
+		.add_global("atan", new InverseTangent())
 		.add_global("cosh", new HyperbolicCosine())
 		.add_global("sinh", new HyperbolicSine())
 		.add_global("tanh", new HyperbolicTangent())

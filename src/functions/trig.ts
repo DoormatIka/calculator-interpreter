@@ -70,6 +70,28 @@ export class HyperbolicTangent extends Callable {
     };
 }
 
+export class InverseSine extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.asin(args[0]);
+    };
+}
+export class InverseCosine extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.acos(args[0]);
+    };
+}
+export class InverseTangent extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.atan(args[0]);
+    };
+}
+
 export class InverseHyperbolicSine extends Callable {
     public arity: number = 1;
     constructor() { super(); }

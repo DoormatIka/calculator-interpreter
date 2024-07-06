@@ -26,11 +26,13 @@ p sqrt(4)^2; // 4
 - Ceiling, Floor, Round to nearest integer `ceil(1.764); floor(5.32); round(543.32);`
 - Sin, Cos, Tan `sin(5); cos(5); tan(5);`
 - Sinh, Cosh, Tanh `sinh(5); cosh(5), tanh(5);`
+- Asin, Acos, Atan `asin(5); acos(5); atan(5);`
 - Asinh, Acosh, Atanh `acosh(5); asinh(5); atanh(5)`;
 - Log, Log2, Log10 `log(5); log2(5); log10(5);`
 - Max, Min of two numbers `max(5, 10); min(1, 0);` // might make this into its own syntax `5>10`?
 
 ## Missing Features
+- Pushing values into equations `no idea how syntax would look like here.`
 - Algebra `simplify "x^2 + 5 = 0";`
 - Graphing `graph "6^2";`
 - Calculus `derive "x^6"` `integrate "x^6"` (big question mark here.)
