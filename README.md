@@ -32,6 +32,9 @@ p sqrt(4)^2; // 4
 - Max, Min of two numbers `max(5, 10); min(1, 0);` // might make this into its own syntax `5>10`?
 
 ## Missing Features
+- Print decimals to fractions. `pf 1/8;`
+- Round by n decimals. `round[n](number);` e.g: `round2(5.6666); (prints 5.67)`
+- Root by n. `[n]thrt(number);` e.g: `4thrt(67);`
 - Pushing values into equations `no idea how syntax would look like here.`
 - Algebra `simplify "x^2 + 5 = 0";`
 - Graphing `graph "6^2";`
