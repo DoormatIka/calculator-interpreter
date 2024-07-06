@@ -7,8 +7,8 @@ import {RecursiveDescentParser} from "./lib/parser.js";
 import {Tokenizer} from "./lib/scanner.js";
 import {CalcError, ParseError, RuntimeError, Stdout} from "./lib/error.js";
 import {Callable} from "./lib/expr.js";
-import {Cosine, Log, Sine, Tangent, Base2Log, Base10Log} from "./functions/trig.js";
-import {Abs, Clock, Sqrt, Ceiling, Floor, Round, Signum, Maximum, Minimum, HyperbolicCosine, HyperbolicSine, HyperbolicTangent, InverseHyperbolicCosine, InverseHyperbolicSine, InverseHyperbolicTangent } from "./functions/standard.js";
+import {Cosine, Log, Sine, Tangent, Base2Log, Base10Log, HyperbolicCosine, HyperbolicSine, HyperbolicTangent, InverseHyperbolicCosine, InverseHyperbolicSine, InverseHyperbolicTangent} from "./functions/trig.js";
+import {Abs, Clock, Sqrt, Ceiling, Floor, Round, Signum, Maximum, Minimum } from "./functions/standard.js";
 
 import fs from "node:fs";
 

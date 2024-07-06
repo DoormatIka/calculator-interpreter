@@ -46,4 +46,51 @@ export class Base10Log extends Callable {
 
 
 
+export class HyperbolicSine extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.sinh(args[0]);
+    };
+}
+
+export class HyperbolicCosine extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.cosh(args[0]);
+    };
+}
+
+export class HyperbolicTangent extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.tanh(args[0]);
+    };
+}
+
+export class InverseHyperbolicSine extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.asinh(args[0]);
+    };
+}
+
+export class InverseHyperbolicCosine extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.acosh(args[0]);
+    };
+}
+
+export class InverseHyperbolicTangent extends Callable {
+    public arity: number = 1;
+    constructor() { super(); }
+    call(interpreter: Interpreter, args: number[]) {
+        return Math.atanh(args[0]);
+    };
+}
 
