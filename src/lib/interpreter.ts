@@ -213,10 +213,12 @@ export class Interpreter {
 				return Math.pow(left, right);
 			case TokenType.ROOT: {
 				if (left <= 0) {
-					throw new RuntimeError(expr.operator, `You can't do negative roots. Will support soon though!`);
+					const runtime = new RuntimeError(expr.operator, `You can't do negative roots. Will support soon though!`);
+					throw this.runtimeError(runtime);
 				}
 				if (right <= 0) {
-					throw new RuntimeError(expr.operator, `You can't do a root on negative values.`);
+					const runtime = new RuntimeError(expr.operator, `You can't do a root on negative values.`);
+					throw this.runtimeError(runtime);
 				}
 				return Math.pow(right, 1/left);
 			}
