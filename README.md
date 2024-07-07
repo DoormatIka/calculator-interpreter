@@ -9,19 +9,25 @@ i = 1; p i + 1; // 2
 
 p sqrt(4); // 2
 p sqrt(4)^2; // 4
+
+p 4 root 6^4; // 6
+p 2^2 root 68^4; // 68
+rt = 3!; result = rt root 729; p result; // 3
 ```
 
-## Syntax
-- Print `p 6;`
-- Basic Calculations (+, -, *, /) `1 + 1;`
-- Factorial `6.4!;`
-- Exponent `6^4;`
+## Syntax (Ordered by execution, last item executes last)
+1. Multiplication, Division `(*, /)`
+2. Basic Calculations `(+, -) 1 + 1;`
+3. Factorial `6.4!;`
+4. Exponent `6^4;`, nth Root `n root m;`
+5. Parenthesis `((1 + 1) * 2)`;
+6. Print `p 6;`
+
+## Functions & Variables
 - Pi Value `pi;`
 - Euler's Number `e;`
-- Parenthesis `((1 + 1) * 2)`;
-
-## Functions
 - Square Root `sqrt(1);`
+- Cube Root `cbrt(1);`
 - Absolute Value `abs(1);` // i might make it into its own syntax `|1|`
 - Ceiling, Floor, Round to nearest integer `ceil(1.764); floor(5.32); round(543.32);`
 - Sin, Cos, Tan `sin(5); cos(5); tan(5);`
@@ -34,7 +40,6 @@ p sqrt(4)^2; // 4
 ## Missing Features
 - Print decimals to fractions. `pf 1/8;`
 - Round by n decimals. `round[n](number);` e.g: `round2(5.6666); (prints 5.67)`
-- Root by n. `[n]thrt(number);` e.g: `4thrt(67);`
 - Pushing values into equations `no idea how syntax would look like here.`
 - Algebra `simplify "x^2 + 5 = 0";`
 - Graphing `graph "6^2";`

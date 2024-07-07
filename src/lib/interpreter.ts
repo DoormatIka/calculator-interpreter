@@ -211,6 +211,15 @@ export class Interpreter {
 				return left + right;
 			case TokenType.CARAT:
 				return Math.pow(left, right);
+			case TokenType.ROOT: {
+				if (left <= 0) {
+					throw new RuntimeError(expr.operator, `You can't do negative roots. Will support soon though!`);
+				}
+				if (right <= 0) {
+					throw new RuntimeError(expr.operator, `You can't do a root on negative values.`);
+				}
+				return Math.pow(right, 1/left);
+			}
 		}
 
 		const runtime = new RuntimeError(expr.operator, `Error evaluating Binary expression.`);

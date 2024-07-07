@@ -9,6 +9,15 @@ export class Sqrt extends Callable {
 	};
 }
 
+export class Cbrt extends Callable {
+	public arity: number = 1;
+	constructor() { super(); }
+	call(interpreter: Interpreter, args: number[]) {
+		return Math.cbrt(args[0]);
+	};
+}
+
+
 export class Clock extends Callable {
 	public arity: number = 0;
 	constructor() { super(); }

@@ -88,8 +88,19 @@ export class RecursiveDescentParser {
 		return expr;
 	}
 	private factor(): Expr {
+		let expr: Expr = this.higher_factor();
+		while (this.match_and_advance([TokenType.SLASH, TokenType.STAR])) {
+			const operator = this.previous();
+			const right = this.higher_factor();
+			const binary: Binary = {type: "BinaryExpr", left: expr, operator: operator, right: right};
+			expr = binary;
+		}
+		return expr;
+	}
+	// this gets executed first.
+	private higher_factor(): Expr {
 		let expr: Expr = this.unary();
-		while (this.match_and_advance([TokenType.SLASH, TokenType.STAR, TokenType.CARAT])) {
+		while (this.match_and_advance([TokenType.ROOT, TokenType.CARAT])) {
 			const operator = this.previous();
 			const right = this.unary();
 			const binary: Binary = {type: "BinaryExpr", left: expr, operator: operator, right: right};

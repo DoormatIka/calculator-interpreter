@@ -11,7 +11,7 @@ export enum TokenType {
 	LEFT_PAREN, 
 	RIGHT_PAREN,
 	DOT, MINUS, PLUS, SLASH, STAR,
-	CARAT, BANG,
+	CARAT, BANG, ROOT,
 
 	NUMBER,
 
@@ -31,6 +31,7 @@ export class Tokenizer { // glorified function, but it follows crafting interpre
 	private unexpected_chars: { char: string, index: number }[] = [];
 	private keywords: { [key: string]: TokenType } = {
 		p: TokenType.PRINT,
+		root: TokenType.ROOT,
 	}
 
 	constructor(private out: Stdout, private str: string) {}
