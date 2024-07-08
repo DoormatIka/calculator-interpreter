@@ -162,7 +162,8 @@ export class RecursiveDescentParser {
 					value: this.previous().literal!,
 					number_type: number_type,
 				};
-			}
+			} // so it will look like NUMBER IDENTIFIER
+			// it can also function without the identifier too.
 			
 			const literal: Literal = { 
 				type: "LiteralExpr",
