@@ -1,5 +1,6 @@
 import chalk from "chalk";
 import {Stdout} from "./error";
+import {WeightType} from "./expr";
 
 export type Token = {
 	type: TokenType,
@@ -31,10 +32,13 @@ export class Tokenizer { // glorified function, but it follows crafting interpre
 	private current = 0;
 	private tokens: Token[] = [];
 	private unexpected_chars: { char: string, index: number }[] = [];
-	private keywords: { [key: string]: TokenType } = {
+	private keywords: {[key: string]: TokenType} = {
 		p: TokenType.PRINT,
 		root: TokenType.ROOT,
-	}
+	};
+	private measurement_types: WeightType[] = [
+		"Gram", "Kilogram", "Pound", "Ton",
+	];
 
 	constructor(private out: Stdout, private str: string) {}
 

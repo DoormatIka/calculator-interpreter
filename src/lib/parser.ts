@@ -155,7 +155,20 @@ export class RecursiveDescentParser {
 	}
 	private primary(): Expr {
 		if (this.match_and_advance([TokenType.NUMBER])) {
-			const literal: Literal = { type: "LiteralExpr", value: this.previous().literal! };
+			let number_type;
+			if (this.match_and_advance([TokenType.IDENTIFIER])) {
+				const literal: Literal = { 
+					type: "LiteralExpr",
+					value: this.previous().literal!,
+					number_type: number_type,
+				};
+			}
+			
+			const literal: Literal = { 
+				type: "LiteralExpr",
+				value: this.previous().literal!,
+				number_type: number_type,
+			};
 			return literal;
 		}
 		if (this.match_and_advance([TokenType.IDENTIFIER])) {

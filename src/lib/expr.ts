@@ -7,9 +7,15 @@ export class Callable {
 }
 
 export interface Expr {
-	type: "BinaryExpr" | "GroupingExpr" | "LiteralExpr" | "UnaryExpr" | "PostExpr"
-	| "VarExpr" | "CallExpr";
+	type: "BinaryExpr" | "GroupingExpr" 
+		| "LiteralExpr" | "UnaryExpr" 
+		| "PostExpr" | "VarExpr" 
+		| "CallExpr";
 };
+
+export type MetricWeightType = "Gram" | "Kilogram";
+export type ImperialWeightType = "Pound" | "Ton";
+export type WeightType = MetricWeightType | ImperialWeightType;
 
 export interface Binary extends Expr {
 	left: Expr,
@@ -21,7 +27,8 @@ export interface Grouping extends Expr {
 	expression: Expr,
 };
 export interface Literal extends Expr {
-	value: number
+	value: number,
+	number_type?: WeightType,
 };
 export interface Unary extends Expr {
 	operator: Token,
