@@ -42,6 +42,7 @@ rt = 3!; result = rt root 729; p result; // 3
 ## Missing Features
 - Print decimals to fractions. `pf 1/8;`
 - Round by n decimals. `round[n](number);` e.g: `round2(5.6666); (prints 5.67)`
+- gcf(), lcd() function. (Support for any number of functions needed.)
 - Pushing values into equations `no idea how syntax would look like here.`
 - Algebra `simplify "x^2 + 5 = 0";`
 - Graphing `graph "6^2";`
