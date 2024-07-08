@@ -51,7 +51,7 @@ export class Interpreter {
 	/**
 		* Recursive descent parsing
 		*/
-	public evaluate(expr: Expr): Expr | number | undefined {
+	public evaluate(expr: Expr): Expr | number {
 		switch (expr.type) {
 			case "UnaryExpr":
 				const unary = expr as Unary;
@@ -143,6 +143,8 @@ export class Interpreter {
 			const runtime = new RuntimeError(expr.paren, `${callee.name} is not a function, but a number.`);
 			throw this.runtimeError(runtime);
 		}
+		const runtime = new RuntimeError(expr.paren, `Something went wrong with function ${callee.name}.`);
+		throw this.runtimeError(runtime);
 	}
 	public evaluateVarExpr(expr: VarExpr): number {
 		const g_var = this.globals.get(expr.name);
@@ -157,8 +159,19 @@ export class Interpreter {
 		}
 		return v;
 	}
-	public evaluateGrouping(expr: Grouping) {
-		return this.evaluate(expr.expression);
+	public evaluateGrouping(expr: Grouping): number {
+		switch (expr.operator.type) {
+			case TokenType.BAR:
+				const num = this.evaluate(expr.expression) as number;
+				return Math.abs(num);
+				break;
+			case TokenType.LEFT_PAREN:
+				// banking on the fact (x + y) would be a number.
+				return this.evaluate(expr.expression) as number;
+			default:
+				const runtime = new RuntimeError(expr.operator, `I can't evaluate that grouping for some reason.`);
+				throw this.runtimeError(runtime);
+		}
 	}
 	public evaluatePost(expr: Post) {
 		const left = this.evaluate(expr.left);

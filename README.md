@@ -7,7 +7,7 @@ i = 1; p i + 1; // 2
 
 1 + 1; 2 + 2; // prints nothing.
 
-p sqrt(4); // 2
+p -sqrt(4); // 2
 p sqrt(4)^2; // 4
 
 p 4 root 6^4; // 6
@@ -15,20 +15,22 @@ p 2^2 root 68^4; // 68
 rt = 3!; result = rt root 729; p result; // 3
 ```
 
-## Syntax (Ordered by execution, last item executes last)
-1. Multiplication, Division `(*, /)`
-2. Basic Calculations `(+, -) 1 + 1;`
+## Syntax (Last item executes last)
+0. Unary `-1`
+1. Parenthesis `((1 + 1) * 2)` and Absolute `|-6^4 + 2|`
+2. Exponent `6^4;`
 3. Factorial `6.4!;`
-4. Exponent `6^4;`, nth Root `n root m;`
-5. Parenthesis `((1 + 1) * 2)`;
-6. Print `p 6;`
+4. nth Root `n root m;`
+5. Multiplication, Division `(*, /)`
+6. Addition, Subtraction `(+, -)`
+7. Print `p 6;`
 
 ## Functions & Variables
 - Pi Value `pi;`
 - Euler's Number `e;`
 - Square Root `sqrt(1);`
 - Cube Root `cbrt(1);`
-- Absolute Value `abs(1);` // i might make it into its own syntax `|1|`
+- Absolute Value `abs(1);`
 - Ceiling, Floor, Round to nearest integer `ceil(1.764); floor(5.32); round(543.32);`
 - Sin, Cos, Tan `sin(5); cos(5); tan(5);`
 - Sinh, Cosh, Tanh `sinh(5); cosh(5), tanh(5);`

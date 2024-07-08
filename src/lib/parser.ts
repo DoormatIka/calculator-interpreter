@@ -162,10 +162,20 @@ export class RecursiveDescentParser {
 			const varexpr: VarExpr = { type: "VarExpr", name: this.previous() };
 			return varexpr;
 		}
-		if (this.match_and_advance([TokenType.LEFT_PAREN])) {
+		if (this.match_and_advance([TokenType.LEFT_PAREN, TokenType.BAR])) {
+			const prev = this.previous();
 			const expr = this.expression();
-			this.consume(TokenType.RIGHT_PAREN, "Expected ')' after expression.");
-			const grouping: Grouping = {type: "GroupingExpr", expression: expr};
+			switch (prev.type) {
+				case TokenType.LEFT_PAREN:
+					this.consume(TokenType.RIGHT_PAREN, "Expected ')' after expression.");
+					break;
+				case TokenType.BAR:
+					this.consume(TokenType.BAR, "Expected '|' after expression.");
+					break;
+				default:
+					throw this.error(prev, "Something went horribly wrong when parsing groupings.");
+			}
+			const grouping: Grouping = {type: "GroupingExpr", operator: prev, expression: expr};
 			return grouping;
 		}
 		throw this.error(this.peek(), "Expected expression.");

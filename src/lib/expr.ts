@@ -17,6 +17,7 @@ export interface Binary extends Expr {
 	right: Expr,
 };
 export interface Grouping extends Expr {
+	operator: Token,
 	expression: Expr,
 };
 export interface Literal extends Expr {

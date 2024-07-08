@@ -11,14 +11,16 @@ export enum TokenType {
 	LEFT_PAREN, 
 	RIGHT_PAREN,
 	DOT, MINUS, PLUS, SLASH, STAR,
-	CARAT, BANG, ROOT,
+	CARAT, BANG, BAR,
 
 	NUMBER,
 
-	PRINT, SEMICOLON, COMMA,
+	PRINT, ROOT, 
+
+	SEMICOLON, COMMA,
 	IDENTIFIER, EQUALS,
 
-	EOF
+	EOF,
 }
 
 /**
@@ -58,19 +60,25 @@ export class Tokenizer { // glorified function, but it follows crafting interpre
 				case ",": this.add_token(TokenType.COMMA); break;
 				case "^": this.add_token(TokenType.CARAT); break;
 				case "!": this.add_token(TokenType.BANG); break;
+				case "|": this.add_token(TokenType.BAR); break;
 				default:
 					if (this.is_digit(char)) {
 						this.number();
 					} else if (this.is_alpha(char)) {
 						this.identifier();
 					} else {
-						this.unexpected_chars.push({ char: this.str.substring(this.current, this.current + 5), index: this.current });
+						if (this.unexpected_chars.length < 5) {
+							this.unexpected_chars.push({ 
+								char: this.str[this.current],
+								index: this.current 
+							});
+						}
 					}
 					break;
 			}
 		}
 		if (this.unexpected_chars.length >= 1) {
-			const e = `Unexpected character at characters [\n${this.unexpected_chars.map(c => `${c.char} at ${c.index}`).join("\n")}].`;
+			const e = `Unexpected character at characters [\n${this.unexpected_chars.map(c => `${c.char} at ${c.index}`).join(", ")}].`;
 			this.out.stdout(chalk.redBright(e));
 		}
 		this.tokens.push({ type: TokenType.EOF, text: "", literal: undefined });
