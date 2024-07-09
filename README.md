@@ -37,7 +37,10 @@ rt = 3!; result = rt root 729; p result; // 3
 - Asin, Acos, Atan `asin(5); acos(5); atan(5);`
 - Asinh, Acosh, Atanh `acosh(5); asinh(5); atanh(5)`;
 - Log, Log2, Log10 `log(5); log2(5); log10(5);`
-- Max, Min of two numbers `max(5, 10); min(1, 0);` // might make this into its own syntax `5>10`?
+- Max, Min of two numbers `max(5, 10); min(1, 0);`
+
+## Doing
+- Syntax for conversion between Imperial and Metric units. `km(60in); cm(10ft); cm(5'6"); p 5'6";`
 
 ## Missing Features
 - Print decimals to fractions. `pf 1/8;`
