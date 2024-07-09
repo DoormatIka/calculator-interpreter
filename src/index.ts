@@ -38,8 +38,8 @@ interpreter
 	.add_global("sqrt", new Sqrt())
 	.add_global("cbrt", new Cbrt())
 	.add_global("abs", new Abs())
-	.add_global("pi", Math.PI)
-	.add_global("e", Math.E)
+	.add_global("pi", { num_value: Math.PI })
+	.add_global("e", { num_value: Math.E })
 	.add_global("ceil", new Ceiling())
 	.add_global("floor", new Floor())
 	.add_global("round", new Round())
@@ -61,12 +61,12 @@ async function run_cli() {
 	for await (const answer of initquestions("[!!calc] >> ")) {
 		const tokenizer = new Tokenizer(out, answer as string);
 		const parsed_tokens = tokenizer.parse();
-		console.log("Tokenized: \n", parsed_tokens);
+		// console.log("Tokenized: \n", parsed_tokens);
 		const parser = new RecursiveDescentParser(parsed_tokens, calc_err);
 
 		try {
 			const tree = parser.parse();
-			console.log("Parsed: \n", printer.parseStmt(tree[0]));
+			// console.log("Parsed: \n", printer.parseStmt(tree[0]));
 			
 			if (tree && !calc_err.getHasError()) {
 				interpreter.interpret(tree);

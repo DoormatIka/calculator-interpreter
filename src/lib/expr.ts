@@ -1,9 +1,16 @@
 import {Interpreter} from "./interpreter.js";
 import {Token} from "./scanner.js";
 
+export interface LabelledNumber {
+	num_value: number,
+	type?: WeightType,
+}
+
 export class Callable {
 	public arity: number = 0;
-	call(interpreter: Interpreter, args: number[]) {return 0;};
+	call(interpreter: Interpreter, args: LabelledNumber[]): LabelledNumber {
+		return {num_value: 0};
+	};
 }
 
 export interface Expr {

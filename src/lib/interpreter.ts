@@ -1,22 +1,19 @@
 import {ASTPrinter} from "./ast_printer.js";
 import {CalcError, RuntimeError, Stdout} from "./error.js";
-import {Grouping, Literal, Unary, Expr, Binary, Expression, Print, Stmt, VarStmt, VarExpr, Call, Callable, Post, WeightType} from "./expr.js";
+import {Grouping, Literal, Unary, Expr, Binary, Expression, Print, Stmt, VarStmt, VarExpr, Call, Callable, Post, WeightType, LabelledNumber} from "./expr.js";
 import {Token, TokenType} from "./scanner.js";
 import {Environment} from "./environment.js";
 import { decimal_factorial, factorial } from "./math/factorial.js";
 import chalk from "chalk";
 
-export interface LabelledNumber {
-	value: number,
-	type?: WeightType,
-}
+
 
 /**
 	* Doesn't need to be re-initialized every run
 	*/
 export class Interpreter {
-	private globals = new Environment<number | Callable>();
-	private environment = new Environment<number>();
+	private globals = new Environment<LabelledNumber | Callable>();
+	private environment = new Environment<LabelledNumber>();
 
 	private printer = new ASTPrinter();
 
@@ -33,7 +30,7 @@ export class Interpreter {
 	public clear_variables() {
 		this.environment.clear();
 	}
-	public add_global(name: string, callable: Callable | number) {
+	public add_global(name: string, callable: Callable | LabelledNumber) {
 		this.globals.define(name, callable);
 		return this;
 	}
@@ -90,8 +87,8 @@ export class Interpreter {
 	}
 	public evaluatePrintStmt(stmt: Print) {
 		const value = this.evaluate(stmt.expression);
-		if (typeof value === "number") {
-			this.std.stdout(chalk.yellow(value));
+		if (isLabelledNumber(value)) {
+			this.std.stdout(chalk.yellow(`${value.num_value}${value.type ?? ""}`));
 		}
 		return value;
 	}
@@ -115,7 +112,7 @@ export class Interpreter {
 				throw this.runtimeError(runtime);
 			}
 			const value = this.evaluate(stmt.initializer);
-			if (typeof value === "number") {
+			if (isLabelledNumber(value)) {
 				this.environment.define(stmt.name.text, value);
 				return value;
 			}
@@ -123,17 +120,17 @@ export class Interpreter {
 	}
 
 	// EXPRs
-	public evaluateCallExpr(expr: Call) {
+	public evaluateCallExpr(expr: Call): LabelledNumber {
 		const callee = expr.callee as VarExpr;
 		const callable = this.globals.get(callee.name);
 		if (callable === undefined) {
 			const runtime = new RuntimeError(expr.paren, `Cannot find a function named "${callee.name.text}".`);
 			throw this.runtimeError(runtime);
 		}
-		const args: number[] = [];
+		const args: LabelledNumber[] = [];
 		for (const arg of expr.arguments) {
 			const e = this.evaluate(arg);
-			if (typeof e === "number") {
+			if (isLabelledNumber(e)) {
 				args.push(e);
 			}
 		}
@@ -142,16 +139,17 @@ export class Interpreter {
 				const runtime = new RuntimeError(expr.paren, `Expected ${callable.arity} arguments but got ${args.length}.`);
 				throw this.runtimeError(runtime);
 			}
-			return callable.call(this, args);
+			const num = callable.call(this, args);
+			return { num_value: num.num_value, type: num.type };
 		}
-		if (typeof callable === "number") {
+		if (isLabelledNumber(callable)) {
 			const runtime = new RuntimeError(expr.paren, `${callee.name} is not a function, but a number.`);
 			throw this.runtimeError(runtime);
 		}
 		const runtime = new RuntimeError(expr.paren, `Something went wrong with function ${callee.name}.`);
 		throw this.runtimeError(runtime);
 	}
-	public evaluateVarExpr(expr: VarExpr): number {
+	public evaluateVarExpr(expr: VarExpr): LabelledNumber {
 		const g_var = this.globals.get(expr.name);
 		if (g_var instanceof Callable) {
 			const runtime = new RuntimeError(expr.name, `You can't use function "${expr.name.text}" as a normal variable.`);
@@ -164,29 +162,31 @@ export class Interpreter {
 		}
 		return v;
 	}
-	public evaluateGrouping(expr: Grouping): number {
+	public evaluateGrouping(expr: Grouping): LabelledNumber {
 		switch (expr.operator.type) {
-			case TokenType.BAR:
-				const num = this.evaluate(expr.expression) as number;
-				return Math.abs(num);
-				break;
-			case TokenType.LEFT_PAREN:
+			case TokenType.BAR: {
+				const num = this.evaluate(expr.expression) as LabelledNumber;
+				return { type: num.type, num_value: Math.abs(num.num_value) };
+			}
+			case TokenType.LEFT_PAREN: {
 				// banking on the fact (x + y) would be a number.
-				return this.evaluate(expr.expression) as number;
+				return this.evaluate(expr.expression) as LabelledNumber;
+			}
 			default:
 				const runtime = new RuntimeError(expr.operator, `I can't evaluate that grouping for some reason.`);
 				throw this.runtimeError(runtime);
 		}
 	}
-	public evaluatePost(expr: Post) {
+	public evaluatePost(expr: Post): LabelledNumber {
 		const left = this.evaluate(expr.left);
-		if (typeof left !== "number") {
+		if (!isLabelledNumber(left)) {
 			const runtime = new RuntimeError(expr.operator, `Left of postfix was not a number.`);
 			throw this.runtimeError(runtime);
 		}
 		switch (expr.operator.type) {
 			case TokenType.BANG: {
-				return decimal_factorial(left);
+				const val = decimal_factorial(left.num_value);
+				return { type: left.type, num_value: val };
 			}
 			default:
 				break;
@@ -195,50 +195,86 @@ export class Interpreter {
 		throw this.runtimeError(runtime);
 	}
 	public evaluateLiteral(expr: Literal): LabelledNumber {
-		return { type: expr.number_type, value: expr.value };
+		return { type: expr.number_type, num_value: expr.value };
 	}
-	public evaluateUnary(expr: Unary) {
+	public evaluateUnary(expr: Unary): LabelledNumber {
 		const right = this.evaluate(expr.right)!;
 
 		switch (expr.operator.type) {
 			case TokenType.MINUS:
-				if (typeof right === "number")
-					return -right;
+				if (isLabelledNumber(right))
+					return { num_value: -right.num_value, type: right.type };
 		}
 
 		const runtime = new RuntimeError(expr.operator, `Error evaluating Unary expression.`);
 		throw this.runtimeError(runtime);
 	}
-	public evaluateBinary(expr: Binary) {
+	public evaluateBinary(expr: Binary): LabelledNumber {
 		const left = this.evaluate(expr.left);
 		const right = this.evaluate(expr.right);
 
-		if (typeof left !== "number" || typeof right !== "number") {
+		if (!isLabelledNumber(left) || !isLabelledNumber(right)) {
 			const runtime = new RuntimeError(expr.operator, `Left or Right in binary was not a number.`);
 			throw this.runtimeError(runtime);
 		}
 
 		switch (expr.operator.type) {
-			case TokenType.MINUS:
-				return left - right;
-			case TokenType.SLASH:
-				return left / right;
-			case TokenType.STAR:
-				return left * right;
-			case TokenType.PLUS:
-				return left + right;
-			case TokenType.CARAT:
-				return Math.pow(left, right);
+			case TokenType.MINUS: {
+				if (left.type === right.type) { // undefined === undefined
+					const val = left.num_value - right.num_value;
+					return { num_value: val, type: left.type };
+				}
+				const runtime = new RuntimeError(expr.operator, `Number ${left.num_value} of label ${left.type} can't be subtracted from a number ${right.num_value} of label ${right.type}.`);
+				throw this.runtimeError(runtime);
+			}
+			case TokenType.PLUS: {
+				if (left.type === right.type) { // undefined === undefined
+					const val = left.num_value + right.num_value;
+					return { num_value: val, type: left.type };
+				}
+				const runtime = new RuntimeError(expr.operator, `Number ${left.num_value} of label ${left.type} can't be added from a number ${right.num_value} of label ${right.type}.`);
+				throw this.runtimeError(runtime);
+			}
+			case TokenType.SLASH: {
+				if (left.type === undefined && right.type === undefined) {
+					const val = left.num_value / right.num_value;
+					return {num_value: val, type: left.type};
+				}
+				const runtime = new RuntimeError(expr.operator, `Labelled numbers cannot be divided.`);
+				throw this.runtimeError(runtime);
+			}
+			case TokenType.STAR: {
+				if (left.type === undefined && right.type === undefined) {
+					const val = left.num_value * right.num_value;
+					return {num_value: val, type: left.type};
+				}
+				const runtime = new RuntimeError(expr.operator, `Labelled numbers cannot be multiplied.`);
+				throw this.runtimeError(runtime);
+			}
+			case TokenType.CARAT: {
+				if (left.type === undefined && right.type === undefined) {
+					const val = Math.pow(left.num_value, right.num_value);
+					return {num_value: val, type: left.type};
+				}
+				const runtime = new RuntimeError(expr.operator, `Labelled numbers cannot be operated with an exponent.`);
+				throw this.runtimeError(runtime);
+			}
 			case TokenType.ROOT: {
-				if (left <= 0) {
+				// how do i handle 1cm root 2km ???
+				if (left.num_value <= 0) {
 					const runtime = new RuntimeError(expr.operator, `You can't do negative roots. Will support soon though!`);
 					throw this.runtimeError(runtime);
 				}
-				if (right <= 0) {
+				if (right.num_value <= 0) {
 					const runtime = new RuntimeError(expr.operator, `You can't do a root on negative values.`);
 					throw this.runtimeError(runtime);
 				}
-				return Math.pow(right, 1/left);
+				if (left.type === undefined && right.type === undefined) {
+					const val = Math.pow(right.num_value, 1/left.num_value);
+					return {num_value: val, type: left.type};
+				}
+				const runtime = new RuntimeError(expr.operator, `Labelled numbers cannot be operated with a root.`);
+				throw this.runtimeError(runtime);
 			}
 		}
 
@@ -250,4 +286,8 @@ export class Interpreter {
 		this.calc_error.runtimeError(err);
 		return err;
 	}
+}
+
+function isLabelledNumber(num: Expr | LabelledNumber | Callable | number): num is LabelledNumber {
+	return (num as LabelledNumber).num_value !== undefined;
 }
