@@ -167,7 +167,7 @@ export class RecursiveDescentParser {
 			const literal: Literal = { 
 				type: "LiteralExpr",
 				value: num_value,
-				number_type: number_type as WeightType | undefined,
+				label: number_type as WeightType | undefined,
 			};
 			return literal;
 		}

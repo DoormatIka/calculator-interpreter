@@ -35,7 +35,7 @@ export interface Grouping extends Expr {
 };
 export interface Literal extends Expr {
 	value: number,
-	number_type?: WeightType,
+	label?: WeightType,
 };
 export interface Unary extends Expr {
 	operator: Token,

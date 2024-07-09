@@ -57,7 +57,7 @@ export class ASTPrinter {
 
 			case "LiteralExpr":
 				const literal_node = node as Literal;
-				this.str += `[Literal] ${literal_node.value}, type: ${literal_node.number_type}`;
+				this.str += `[Literal] ${literal_node.value}, type: ${literal_node.label}`;
 				break;
 
 			case "UnaryExpr":

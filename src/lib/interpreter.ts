@@ -195,7 +195,7 @@ export class Interpreter {
 		throw this.runtimeError(runtime);
 	}
 	public evaluateLiteral(expr: Literal): LabelledNumber {
-		return { type: expr.number_type, num_value: expr.value };
+		return { type: expr.label, num_value: expr.value };
 	}
 	public evaluateUnary(expr: Unary): LabelledNumber {
 		const right = this.evaluate(expr.right)!;
@@ -244,12 +244,21 @@ export class Interpreter {
 				throw this.runtimeError(runtime);
 			}
 			case TokenType.STAR: {
-				if (left.type === undefined && right.type === undefined) {
+				if ((left.type === undefined && right.type !== undefined) || 
+					(left.type !== undefined && right.type === undefined)) {
+					// Operand is labeled, and the other is not.
 					const val = left.num_value * right.num_value;
-					return {num_value: val, type: left.type};
+					const resultType = left.type !== undefined ? left.type : right.type;
+					return { num_value: val, type: resultType };
+				} else if (left.type === undefined && right.type === undefined) {
+					// Both operands are non-labeled.
+					const val = left.num_value * right.num_value;
+					return { num_value: val, type: left.type }; 
+				} else {
+					// Both operands are labeled, decide on how to handle this case
+					const runtime = new RuntimeError(expr.operator, `Multiplying two labeled numbers is not supported.`);
+					throw this.runtimeError(runtime);
 				}
-				const runtime = new RuntimeError(expr.operator, `Labelled numbers cannot be multiplied.`);
-				throw this.runtimeError(runtime);
 			}
 			case TokenType.CARAT: {
 				if (left.type === undefined && right.type === undefined) {
