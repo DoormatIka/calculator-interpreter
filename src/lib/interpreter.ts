@@ -236,22 +236,21 @@ export class Interpreter {
 				throw this.runtimeError(runtime);
 			}
 			case TokenType.SLASH: {
-				if (left.type === undefined && right.type === undefined) {
-					const val = left.num_value / right.num_value;
-					return {num_value: val, type: left.type};
-				}
-				const runtime = new RuntimeError(expr.operator, `Labelled numbers cannot be divided.`);
-				throw this.runtimeError(runtime);
-			}
-			case TokenType.STAR: {
-			    // Check if at least one operand is non-labeled.
 				if (left.type === undefined || right.type === undefined) {
-					const val = left.num_value * right.num_value;
-					// Use the type of the labeled operand, or undefined if both are non-labeled.
+					const val = left.num_value / right.num_value;
 					const resultType = left.type !== undefined ? left.type : right.type;
 					return { num_value: val, type: resultType };
 				} else {
-					// Both operands are labeled, handle this case as needed.
+					const runtime = new RuntimeError(expr.operator, "Dividing two labeled numbers is not supported.");
+					throw this.runtimeError(runtime);
+				}
+			}
+			case TokenType.STAR: {
+				if (left.type === undefined || right.type === undefined) {
+					const val = left.num_value * right.num_value;
+					const resultType = left.type !== undefined ? left.type : right.type;
+					return { num_value: val, type: resultType };
+				} else {
 					const runtime = new RuntimeError(expr.operator, "Multiplying two labeled numbers is not supported.");
 					throw this.runtimeError(runtime);
 				}
