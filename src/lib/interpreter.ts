@@ -1,10 +1,15 @@
 import {ASTPrinter} from "./ast_printer.js";
 import {CalcError, RuntimeError, Stdout} from "./error.js";
-import {Grouping, Literal, Unary, Expr, Binary, Expression, Print, Stmt, VarStmt, VarExpr, Call, Callable, Post} from "./expr.js";
+import {Grouping, Literal, Unary, Expr, Binary, Expression, Print, Stmt, VarStmt, VarExpr, Call, Callable, Post, WeightType} from "./expr.js";
 import {Token, TokenType} from "./scanner.js";
 import {Environment} from "./environment.js";
 import { decimal_factorial, factorial } from "./math/factorial.js";
 import chalk from "chalk";
+
+export interface LabelledNumber {
+	value: number,
+	type?: WeightType,
+}
 
 /**
 	* Doesn't need to be re-initialized every run
@@ -51,7 +56,7 @@ export class Interpreter {
 	/**
 		* Recursive descent parsing
 		*/
-	public evaluate(expr: Expr): Expr | number {
+	public evaluate(expr: Expr): Expr | LabelledNumber {
 		switch (expr.type) {
 			case "UnaryExpr":
 				const unary = expr as Unary;
@@ -189,8 +194,8 @@ export class Interpreter {
 		const runtime = new RuntimeError(expr.operator, `Wrong usage of postfix.`);
 		throw this.runtimeError(runtime);
 	}
-	public evaluateLiteral(expr: Literal) {
-		return expr.value;
+	public evaluateLiteral(expr: Literal): LabelledNumber {
+		return { type: expr.number_type, value: expr.value };
 	}
 	public evaluateUnary(expr: Unary) {
 		const right = this.evaluate(expr.right)!;

@@ -1,6 +1,6 @@
 
 import {CalcError, ParseError} from "./error.js";
-import {Binary, Expr, Grouping, Literal, Stmt, Unary, Print, Expression, VarStmt, VarExpr, Callable, Call, Post} from "./expr.js";
+import {Binary, Expr, Grouping, Literal, Stmt, Unary, Print, Expression, VarStmt, VarExpr, Callable, Call, Post, WeightType} from "./expr.js";
 import {Token, TokenType} from "./scanner.js";
 
 
@@ -9,6 +9,7 @@ import {Token, TokenType} from "./scanner.js";
 	*/
 export class RecursiveDescentParser {
 	private current = 0;
+	private measurements: WeightType[] = ["g", "kg", "lb", "ton"];
 	constructor(
 		private tokens: Token[],
 		private calc_error: CalcError
@@ -155,20 +156,18 @@ export class RecursiveDescentParser {
 	}
 	private primary(): Expr {
 		if (this.match_and_advance([TokenType.NUMBER])) {
+			const num_value = this.previous().literal!;
 			let number_type;
 			if (this.match_and_advance([TokenType.IDENTIFIER])) {
-				const literal: Literal = { 
-					type: "LiteralExpr",
-					value: this.previous().literal!,
-					number_type: number_type,
-				};
-			} // so it will look like NUMBER IDENTIFIER
-			// it can also function without the identifier too.
-			
+				number_type = this.previous().text as WeightType;
+			} // this will look like "NUMBER IDENTIFIER?"
+			if (number_type !== undefined && !this.measurements.includes(number_type)) {
+				throw this.error(this.previous(), "Unknown measurement type.");
+			}
 			const literal: Literal = { 
 				type: "LiteralExpr",
-				value: this.previous().literal!,
-				number_type: number_type,
+				value: num_value,
+				number_type: number_type as WeightType | undefined,
 			};
 			return literal;
 		}

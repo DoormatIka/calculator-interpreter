@@ -61,10 +61,12 @@ async function run_cli() {
 	for await (const answer of initquestions("[!!calc] >> ")) {
 		const tokenizer = new Tokenizer(out, answer as string);
 		const parsed_tokens = tokenizer.parse();
+		console.log("Tokenized: \n", parsed_tokens);
 		const parser = new RecursiveDescentParser(parsed_tokens, calc_err);
 
 		try {
 			const tree = parser.parse();
+			console.log("Parsed: \n", printer.parseStmt(tree[0]));
 			
 			if (tree && !calc_err.getHasError()) {
 				interpreter.interpret(tree);

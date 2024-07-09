@@ -36,9 +36,6 @@ export class Tokenizer { // glorified function, but it follows crafting interpre
 		p: TokenType.PRINT,
 		root: TokenType.ROOT,
 	};
-	private measurement_types: WeightType[] = [
-		"Gram", "Kilogram", "Pound", "Ton",
-	];
 
 	constructor(private out: Stdout, private str: string) {}
 

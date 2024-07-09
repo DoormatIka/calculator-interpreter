@@ -13,8 +13,8 @@ export interface Expr {
 		| "CallExpr";
 };
 
-export type MetricWeightType = "Gram" | "Kilogram";
-export type ImperialWeightType = "Pound" | "Ton";
+export type MetricWeightType = "g" | "kg";
+export type ImperialWeightType = "lb" | "ton";
 export type WeightType = MetricWeightType | ImperialWeightType;
 
 export interface Binary extends Expr {
