@@ -1,11 +1,12 @@
 
 export class Edge<T> {
 	constructor(
+		public from: string, 
 		public to: string,
 		public weight: T
 	) {}
 	toString(): string {
-		return `(${this.to}, ${this.weight})`;
+        return `(${this.from} -> ${this.to}, ${this.weight})`; 
 	}
 }
 
@@ -21,13 +22,12 @@ export class WeightedGraph<T> {
 		if (!this.adj.has(node1)) {
 			this.addNode(node1);
 		}
+
 		if (!this.adj.has(node2)) {
 			this.addNode(node2);
 		}
-		const edge = new Edge<T>(node1, weight);
-		const edge2 = new Edge<T>(node2, weight);
-		this.adj.get(node1)?.push(edge2);
-		this.adj.get(node2)?.push(edge);
+		const edge = new Edge<T>(node1, node2, weight); 
+		this.adj.get(node1)?.push(edge);
 	}
 	getEdgesFromNode(node: string): Edge<T>[] {
 		return this.adj.get(node) || [];
@@ -36,9 +36,15 @@ export class WeightedGraph<T> {
 		const edges: Edge<T>[] = [];
 	
 		for (let i = 0; i < nodePath.length - 1; i++) {
+			// Example nodePath is [A, B, D, E]
+			// Gets the current node from path. [A]
 			const currentNode = nodePath[i];
-			const nextNode = nodePath[i + 1];
+			// Gets the next node from path, [B]
+			const nextNode = nodePath[i + 1]; 
+			// Gets the current edges from the current node [A] if there's A -> B, A -> C... edge, It would be here.
 			const nodeEdges = this.getEdgesFromNode(currentNode);
+			// It checks the end node of the edge and compares it with our next node from our path. if it sees A -> B.
+			// Since B is our next node, it will become true, and the edge will be pushed to our edge array.
 			const connectingEdge = nodeEdges.find(edge => edge.to === nextNode);
 			if (connectingEdge) {
 				edges.push(connectingEdge);
@@ -48,7 +54,6 @@ export class WeightedGraph<T> {
 		return edges;
 	}
 
-	// so nodes contains the path from start to target, 
 
 	bfs(startVertex: string, targetVertex: string): string[] | null {
 		const queue: string[] = [startVertex];
