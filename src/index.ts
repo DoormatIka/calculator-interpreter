@@ -115,7 +115,9 @@ function interpretFile(filename: string) {
 		if (tree && !calc_err.getHasError()) {
 			interpreter.interpret(tree);
 		}
-	} catch (error: unknown) {}
+	} catch (error: unknown) {
+		console.log(error);
+	}
 
 	console.log(out.get_stdout());
 	out.clear_stdout();
@@ -131,3 +133,4 @@ async function runFileInterpreter() {
 }
 
 run_cli();
+// runFileInterpreter();

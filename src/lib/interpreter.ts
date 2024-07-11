@@ -94,12 +94,6 @@ export class Interpreter {
 	}
 	public evaluateVarStmt(stmt: VarStmt) {
 		const g_var = this.globals.get(stmt.name);
-
-		if (g_var instanceof Callable) {
-			const runtime = new RuntimeError(stmt.name, `You should call the function like: sqrt(10).`);
-			throw this.runtimeError(runtime);
-		}
-
 		if (stmt.initializer === undefined) {
 			if (g_var === undefined) {
 				const runtime = new RuntimeError(stmt.name, `Variable needs to have an initializer.`);
@@ -108,6 +102,10 @@ export class Interpreter {
 			return g_var;
 		} else {
 			if (g_var !== undefined) {
+				if (g_var instanceof Callable) {
+					const runtime = new RuntimeError(stmt.name, `That function has already been defined. Please replace the name.`);
+					throw this.runtimeError(runtime);
+				}
 				const runtime = new RuntimeError(stmt.name, `Global variable can't be reassigned.`);
 				throw this.runtimeError(runtime);
 			}

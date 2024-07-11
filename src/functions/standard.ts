@@ -30,7 +30,7 @@ export class Clock extends Callable {
 	public arity: number = 0;
 	constructor() { super(); }
 	call(interpreter: Interpreter, args: LabelledNumber[]) {
-		return { num_value: performance.now(), type: args[0].type }; 
+		return { num_value: performance.now(), type: undefined }; 
 	};
 }
 
@@ -79,7 +79,7 @@ export class Maximum extends Callable {
     public arity: number = 2; 
     constructor() { super(); }
     call(interpreter: Interpreter, args: LabelledNumber[]) {
-		return { num_value: Math.max(args[0].num_value, args[1].num_value), type: args[0].type }; 
+		return { num_value: Math.max(args[0].num_value, args[1].num_value), type: args[0].type };
     };
 }
 
