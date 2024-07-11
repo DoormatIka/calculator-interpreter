@@ -1,4 +1,4 @@
-import {Callable, LabelledNumber, WeightType} from "../lib/expr.js";
+import {Callable, LabelledNumber} from "../lib/expr.js";
 import {WeightedGraph} from "../lib/graph.js";
 import {Interpreter} from "../lib/interpreter.js";
 import { RuntimeError } from "../lib/error.js";
@@ -29,7 +29,7 @@ export function createConversionFunction(fn_name: string, graph: WeightedGraph):
 			for (const edge of edgesInPath) {
 				converted *= edge.weight;
 			}
-            return { num_value: converted, type: fn_name as WeightType };
+            return { num_value: converted, type: fn_name };
         }
     };
 	return new c();

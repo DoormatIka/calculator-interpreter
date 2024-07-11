@@ -1,6 +1,6 @@
 import {ASTPrinter} from "./ast_printer.js";
 import {CalcError, RuntimeError, Stdout} from "./error.js";
-import {Grouping, Literal, Unary, Expr, Binary, Expression, Print, Stmt, VarStmt, VarExpr, Call, Callable, Post, WeightType, LabelledNumber} from "./expr.js";
+import {Grouping, Literal, Unary, Expr, Binary, Expression, Print, Stmt, VarStmt, VarExpr, Call, Callable, Post, LabelledNumber} from "./expr.js";
 import {Token, TokenType} from "./scanner.js";
 import {Environment} from "./environment.js";
 import { decimal_factorial, factorial } from "./math/factorial.js";

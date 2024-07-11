@@ -1,6 +1,5 @@
 import chalk from "chalk";
 import {Stdout} from "./error";
-import {WeightType} from "./expr";
 
 export type Token = {
 	type: TokenType,

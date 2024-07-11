@@ -3,7 +3,7 @@ import {Token} from "./scanner.js";
 
 export interface LabelledNumber {
 	num_value: number,
-	type?: WeightType,
+	type?: string,
 }
 
 export class Callable {
@@ -20,10 +20,6 @@ export interface Expr {
 		| "CallExpr";
 };
 
-export type MetricWeightType = "kg" | "g" | "dg" | "cg" | "mg" | "mcg" | "ng";
-export type ImperialWeightType = "st" | "qr" | "lb" | "ston" | "lton" | "mton";
-export type WeightType = MetricWeightType | ImperialWeightType;
-
 export interface Binary extends Expr {
 	left: Expr,
 	operator: Token,
@@ -35,7 +31,7 @@ export interface Grouping extends Expr {
 };
 export interface Literal extends Expr {
 	value: number,
-	label?: WeightType,
+	label?: string,
 };
 export interface Unary extends Expr {
 	operator: Token,

@@ -13,6 +13,7 @@ p sqrt(4)^2; // 4
 p 4 root 6^4; // 6
 p 2^2 root 68^4; // 68
 rt = 3!; result = rt root 729; p result; // 3
+p g(10lb); // converting 10 pounds to grams, prints 4535.924g
 ```
 
 ## Syntax (Last item executes last)
@@ -39,12 +40,18 @@ rt = 3!; result = rt root 729; p result; // 3
 - Log, Log2, Log10 `log(5); log2(5); log10(5);`
 - Max, Min of two numbers `max(5, 10); min(1, 0);`
 
+## Supported Units
+### Weight
+- `Metric: kg (kilogram), g (gram), dg (decigram), cg (centigram), mg (milligram), mcg (microgram), ng (nanogram)`
+- `Imperial: lb (pounds), st (stone), qr (quarter), ston (short ton), lton (long ton), mton (metric ton)`
+
 ## Doing
-- Syntax for conversion between Imperial and Metric units. `km(60in); cm(10ft); cm(5'6"); p 5'6";`
+- Support height and length.
+- Support `cm(5'6"); p 5'6";`
 
 ## Missing Features
 - Print decimals to fractions. `pf 1/8;`
-- Round by n decimals. `round[n](number);` e.g: `round2(5.6666); (prints 5.67)`
+- Round by n decimals. `2 round 10.5237`
 - Pushing values into equations `no idea how syntax would look like here.`
 - Algebra `simplify "x^2 + 5 = 0";`
 - Graphing `graph "6^2";`

@@ -1,6 +1,6 @@
 
 import {CalcError, ParseError} from "./error.js";
-import {Binary, Expr, Grouping, Literal, Stmt, Unary, Print, Expression, VarStmt, VarExpr, Callable, Call, Post, WeightType} from "./expr.js";
+import {Binary, Expr, Grouping, Literal, Stmt, Unary, Print, Expression, VarStmt, VarExpr, Callable, Call, Post} from "./expr.js";
 import {Token, TokenType} from "./scanner.js";
 
 
@@ -12,7 +12,7 @@ export class RecursiveDescentParser {
 	constructor(
 		private tokens: Token[],
 		private calc_error: CalcError,
-		private measurements: WeightType[]
+		private measurements: string[]
 	) {}
 	public parse() {
 		const statements: Stmt[] = [];
@@ -159,7 +159,7 @@ export class RecursiveDescentParser {
 			const num_value = this.previous().literal!;
 			let number_type;
 			if (this.match_and_advance([TokenType.IDENTIFIER])) {
-				number_type = this.previous().text as WeightType;
+				number_type = this.previous().text;
 			} // this will look like "NUMBER IDENTIFIER?"
 			if (number_type !== undefined && !this.measurements.includes(number_type)) {
 				throw this.error(this.previous(), "Unknown measurement type.");
@@ -167,7 +167,7 @@ export class RecursiveDescentParser {
 			const literal: Literal = { 
 				type: "LiteralExpr",
 				value: num_value,
-				label: number_type as WeightType | undefined,
+				label: number_type,
 			};
 			return literal;
 		}

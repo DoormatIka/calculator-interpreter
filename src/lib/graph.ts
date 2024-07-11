@@ -13,6 +13,9 @@ export class Edge<T> {
 export class WeightedGraph {
 	private adj = new Map<string, Edge<number>[]>();
 
+	getAllNodes(): string[] {
+		return [...this.adj.keys()];
+	}
 	addNode(node: string) {
 		if (!this.adj.has(node)) {
 			this.adj.set(node, []);

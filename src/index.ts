@@ -11,7 +11,7 @@ import {Abs, Clock, Sqrt, Ceiling, Floor, Round, Signum, Maximum, Minimum, Cbrt,
 
 import fs from "node:fs";
 import {WeightedGraph} from "./lib/graph.js";
-import {Callable, LabelledNumber, WeightType} from "./lib/expr.js";
+import {Callable, LabelledNumber} from "./lib/expr.js";
 import {createConversionFunction} from "./functions/conversion.js";
 
 async function* initquestions(query: string) {
@@ -24,10 +24,6 @@ async function* initquestions(query: string) {
 	}
 }
 
-const measurement_units: WeightType[] = [
-	"kg", "g", "dg", "cg", "mg", "mcg", "ng",
-	"st", "qr", "lb", "ston", "lton", "mton",
-];
 const graph = new WeightedGraph();
 const out = new Stdout();
 const calc_err = new CalcError(out);
@@ -49,6 +45,9 @@ graph // imperial weights
 	.addEdge("ston", "lb", 2000) // ton/short ton
 	.addEdge("lton", "lb", 2240) // long ton
 	.addEdge("mton", "lb", 2204.623) // metric ton
+
+const measurement_units = graph.getAllNodes();
+
 interpreter
 	// Standard Functions
 	.add_global("clock", new Clock())
