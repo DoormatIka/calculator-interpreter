@@ -5,7 +5,7 @@ import {Token, TokenType} from "./scanner.js";
 import {Environment} from "./environment.js";
 import { decimal_factorial, factorial } from "./math/factorial.js";
 import chalk from "chalk";
-
+import {WeightedGraph} from "./graph.js";
 
 
 /**
@@ -139,8 +139,13 @@ export class Interpreter {
 				const runtime = new RuntimeError(expr.paren, `Expected ${callable.arity} arguments but got ${args.length}.`);
 				throw this.runtimeError(runtime);
 			}
-			const num = callable.call(this, args);
-			return { num_value: num.num_value, type: num.type };
+			try {
+				const num = callable.call(this, args);
+				return { num_value: num.num_value, type: num.type };
+			} catch (err: unknown) {
+				const runtime = err as RuntimeError;
+				throw this.runtimeError(runtime);
+			}
 		}
 		if (isLabelledNumber(callable)) {
 			const runtime = new RuntimeError(expr.paren, `${callee.name} is not a function, but a number.`);

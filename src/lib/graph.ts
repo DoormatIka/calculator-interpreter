@@ -10,30 +10,33 @@ export class Edge<T> {
 	}
 }
 
-export class WeightedGraph<T> {
-	private adj = new Map<string, Edge<T>[]>();
+export class WeightedGraph {
+	private adj = new Map<string, Edge<number>[]>();
 
 	addNode(node: string) {
 		if (!this.adj.has(node)) {
 			this.adj.set(node, []);
 		}
+		return this;
 	}
-	addEdge(node1: string, node2: string, weight: T) {
-		if (!this.adj.has(node1)) {
-			this.addNode(node1);
+	addEdge(from: string, to: string, weight: number) {
+		if (!this.adj.has(from)) {
+			this.addNode(from);
 		}
-
-		if (!this.adj.has(node2)) {
-			this.addNode(node2);
+		if (!this.adj.has(to)) {
+			this.addNode(to);
 		}
-		const edge = new Edge<T>(node1, node2, weight); 
-		this.adj.get(node1)?.push(edge);
+		const edge = new Edge<number>(from, to, weight); 
+		const reversal_edge = new Edge<number>(to, from, 1 / weight); 
+		this.adj.get(from)?.push(edge);
+		this.adj.get(to)?.push(reversal_edge);
+		return this;
 	}
-	getEdgesFromNode(node: string): Edge<T>[] {
+	getEdgesFromNode(node: string): Edge<number>[] {
 		return this.adj.get(node) || [];
 	}
-	getEdgesFromPath(nodePath: string[]): Edge<T>[] {
-		const edges: Edge<T>[] = [];
+	getEdgesFromPath(nodePath: string[]): Edge<number>[] {
+		const edges: Edge<number>[] = [];
 	
 		for (let i = 0; i < nodePath.length - 1; i++) {
 			// Example nodePath is [A, B, D, E]

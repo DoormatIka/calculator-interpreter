@@ -4,15 +4,15 @@ import readline from "node:readline";
 import {ASTPrinter} from "./lib/ast_printer.js";
 import {Interpreter} from "./lib/interpreter.js";
 import {RecursiveDescentParser} from "./lib/parser.js";
-import {Tokenizer} from "./lib/scanner.js";
-import {CalcError, ParseError, RuntimeError, Stdout} from "./lib/error.js";
-import {Callable} from "./lib/expr.js";
+import {TokenType, Tokenizer} from "./lib/scanner.js";
+import {CalcError, RuntimeError, Stdout} from "./lib/error.js";
 import {Cosine, Log, Sine, Tangent, Base2Log, Base10Log, HyperbolicCosine, HyperbolicSine, HyperbolicTangent, InverseHyperbolicCosine, InverseHyperbolicSine, InverseHyperbolicTangent, InverseSine, InverseCosine, InverseTangent} from "./functions/trig.js";
-import {Abs, Clock, Sqrt, Ceiling, Floor, Round, Signum, Maximum, Minimum, Cbrt } from "./functions/standard.js";
+import {Abs, Clock, Sqrt, Ceiling, Floor, Round, Signum, Maximum, Minimum, Cbrt, Num } from "./functions/standard.js";
 
 import fs from "node:fs";
 import {WeightedGraph} from "./lib/graph.js";
-
+import {Callable, LabelledNumber, WeightType} from "./lib/expr.js";
+import {createConversionFunction} from "./functions/conversion.js";
 
 async function* initquestions(query: string) {
 	const cli = readline.createInterface({
@@ -24,11 +24,35 @@ async function* initquestions(query: string) {
 	}
 }
 
+const measurement_units: WeightType[] = [
+	"kg", "g", "dg", "cg", "mg", "mcg", "ng",
+	"st", "qr", "lb", "ston", "lton", "mton",
+];
+const graph = new WeightedGraph();
 const out = new Stdout();
 const calc_err = new CalcError(out);
 const interpreter = new Interpreter(out, calc_err);
+
+graph // metric weights
+	.addEdge("kg", "g", 1000)
+	.addEdge("g", "dg", 10)
+	.addEdge("g", "cg", 100)
+	.addEdge("g", "mg", 1000)
+	.addEdge("g", "mcg", 1e+6)
+	.addEdge("g", "ng", 1e+9);
+graph // imperial to metric weight
+	.addEdge("lb", "g", 453.5924);
+graph // imperial weights
+	.addEdge("st", "lb", 14)
+	.addEdge("qr", "lb", 28)
+	// different types of tons
+	.addEdge("ston", "lb", 2000) // ton/short ton
+	.addEdge("lton", "lb", 2240) // long ton
+	.addEdge("mton", "lb", 2204.623) // metric ton
 interpreter
+	// Standard Functions
 	.add_global("clock", new Clock())
+	.add_global("num", new Num()) // removes the label
 	// Math Functions
 	.add_global("sin", new Sine())
 	.add_global("cos", new Cosine())
@@ -56,19 +80,18 @@ interpreter
 	.add_global("acosh", new InverseHyperbolicCosine())
 	.add_global("asinh", new InverseHyperbolicSine())
 	.add_global("atanh", new InverseHyperbolicTangent());
+for (const unit of measurement_units) {
+	interpreter.add_global(unit, createConversionFunction(unit, graph));
+}
 const printer = new ASTPrinter();
 
 async function run_cli() {
 	for await (const answer of initquestions("[!!calc] >> ")) {
 		const tokenizer = new Tokenizer(out, answer as string);
 		const parsed_tokens = tokenizer.parse();
-		// console.log("Tokenized: \n", parsed_tokens);
-		const parser = new RecursiveDescentParser(parsed_tokens, calc_err);
-
+		const parser = new RecursiveDescentParser(parsed_tokens, calc_err, measurement_units);
 		try {
 			const tree = parser.parse();
-			// console.log("Parsed: \n", printer.parseStmt(tree[0]));
-			
 			if (tree && !calc_err.getHasError()) {
 				interpreter.interpret(tree);
 			}
@@ -86,7 +109,7 @@ function interpretFile(filename: string) {
 	const data = fs.readFileSync(`./benchmarks/${filename}`, { encoding: "utf8" });
 	const tokenizer = new Tokenizer(out, data);
 	const parsed_tokens = tokenizer.parse();
-	const parser = new RecursiveDescentParser(parsed_tokens, calc_err);
+	const parser = new RecursiveDescentParser(parsed_tokens, calc_err, measurement_units);
 	try {
 		const tree = parser.parse();
 		if (tree && !calc_err.getHasError()) {
@@ -107,27 +130,4 @@ async function runFileInterpreter() {
 	}
 }
 
-const graph = new WeightedGraph<number>();
-graph.addNode("A");
-graph.addNode("B");
-graph.addNode("C");
-graph.addNode("D");
-graph.addNode("E");
-
-graph.addEdge("A", "B", 5);
-graph.addEdge("B", "D", 2.3);
-graph.addEdge("B", "C", 1.67);
-graph.addEdge("D", "E", 4.3);
-
-const path = graph.bfs("A", "E") ?? [];
-// returns the path (a list of nodes).
-console.log(path);
-// i want to access their edges to get their weight.
-const edgesInPath = graph.getEdgesFromPath(path);
-
-// how do i do this?
-console.log(edgesInPath);
-
-graph.printGraph();
-
-// run_cli();
+run_cli();

@@ -9,10 +9,10 @@ import {Token, TokenType} from "./scanner.js";
 	*/
 export class RecursiveDescentParser {
 	private current = 0;
-	private measurements: WeightType[] = ["g", "kg", "lb", "ton"];
 	constructor(
 		private tokens: Token[],
-		private calc_error: CalcError
+		private calc_error: CalcError,
+		private measurements: WeightType[]
 	) {}
 	public parse() {
 		const statements: Stmt[] = [];
