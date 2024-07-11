@@ -2,12 +2,21 @@
 import {Callable, LabelledNumber} from "../../lib/expr.js";
 import {Interpreter} from "../../lib/interpreter.js";
 
-class ConverterFunctionBuilder {
-	private measurements: Callable[] = [];
-	constructor() {}
-	addMeasurement(fn_name: string, arity: number, call: (interpreter: Interpreter, args: LabelledNumber[]) => LabelledNumber) {
 
-	}
+
+
+// this is what i will pass to the interpreter.
+//
+// this kinda goes against my plan of kg => lbs
+// 		then it becomes kg => g => lbs
+function createConversionClass(conversionLogic: (num: number) => number): typeof Callable {
+    return class extends Callable {
+        public arity: number = 1;
+        call(interpreter: Interpreter, args: LabelledNumber[]) {
+            const convertedValue = conversionLogic(args[0].num_value);
+            return { num_value: convertedValue, type: args[0].type };
+        }
+    };
 }
 
 export class ToKilograms extends Callable {

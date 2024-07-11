@@ -11,6 +11,7 @@ import {Cosine, Log, Sine, Tangent, Base2Log, Base10Log, HyperbolicCosine, Hyper
 import {Abs, Clock, Sqrt, Ceiling, Floor, Round, Signum, Maximum, Minimum, Cbrt } from "./functions/standard.js";
 
 import fs from "node:fs";
+import {WeightedGraph} from "./lib/graph.js";
 
 
 async function* initquestions(query: string) {
@@ -106,4 +107,27 @@ async function runFileInterpreter() {
 	}
 }
 
-run_cli();
+const graph = new WeightedGraph<number>();
+graph.addNode("A");
+graph.addNode("B");
+graph.addNode("C");
+graph.addNode("D");
+graph.addNode("E");
+
+graph.addEdge("A", "B", 5);
+graph.addEdge("B", "D", 2.3);
+graph.addEdge("B", "C", 1.67);
+graph.addEdge("D", "E", 4.3);
+
+const path = graph.bfs("A", "E") ?? [];
+// returns the path (a list of nodes).
+console.log(path);
+// i want to access their edges to get their weight.
+const edgesInPath = graph.getEdgesFromPath(path);
+
+// how do i do this?
+console.log(edgesInPath);
+
+graph.printGraph();
+
+// run_cli();
