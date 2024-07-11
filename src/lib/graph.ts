@@ -1,11 +1,11 @@
 
 export class Edge<T> {
 	constructor(
-		public node: string,
+		public to: string,
 		public weight: T
 	) {}
 	toString(): string {
-		return `(${this.node}, ${this.weight})`;
+		return `(${this.to}, ${this.weight})`;
 	}
 }
 
@@ -32,16 +32,24 @@ export class WeightedGraph<T> {
 	getEdgesFromNode(node: string): Edge<T>[] {
 		return this.adj.get(node) || [];
 	}
-	getEdgesFromPath(nodes: string[]): Edge<T>[] {
-        const edges: Edge<T>[] = [];
+	getEdgesFromPath(nodePath: string[]): Edge<T>[] {
+		const edges: Edge<T>[] = [];
+	
+		for (let i = 0; i < nodePath.length - 1; i++) {
+			const currentNode = nodePath[i];
+			const nextNode = nodePath[i + 1];
+			const nodeEdges = this.getEdgesFromNode(currentNode);
+			const connectingEdge = nodeEdges.find(edge => edge.to === nextNode);
+			if (connectingEdge) {
+				edges.push(connectingEdge);
+			}
+		}
+	
+		return edges;
+	}
 
-        for (const node of nodes) {
-            const nodeEdges = this.getEdgesFromNode(node);
-            edges.push(...nodeEdges);
-        }
+	// so nodes contains the path from start to target, 
 
-        return edges;
-    }
 	bfs(startVertex: string, targetVertex: string): string[] | null {
 		const queue: string[] = [startVertex];
 		const visited: Set<string> = new Set();
@@ -66,10 +74,10 @@ export class WeightedGraph<T> {
 
 			const neighbors = this.getEdgesFromNode(currentVertex);
 			for (const neighbor of neighbors) {
-				if (!visited.has(neighbor.node)) {
-					visited.add(neighbor.node);
-					predecessor.set(neighbor.node, currentVertex);
-					queue.push(neighbor.node);
+				if (!visited.has(neighbor.to)) {
+					visited.add(neighbor.to);
+					predecessor.set(neighbor.to, currentVertex);
+					queue.push(neighbor.to);
 				}
 			}
 		}
@@ -80,7 +88,7 @@ export class WeightedGraph<T> {
 
 	printGraph(): void {
         for (let [node, edges] of this.adj) {
-            const edgeDetails = edges.map(edge => `${edge.node} (weight: ${edge.weight})`).join(', ');
+            const edgeDetails = edges.map(edge => `${edge.to} (weight: ${edge.weight})`).join(', ');
             console.log(`${node} -> ${edgeDetails}`);
         }
     }
