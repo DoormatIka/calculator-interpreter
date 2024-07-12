@@ -11,7 +11,8 @@ export class RecursiveDescentParser {
 	private current = 0;
 	constructor(
 		private tokens: Token[],
-		private calc_error: CalcError
+		private calc_error: CalcError,
+		private measurements: string[]
 	) {}
 	public parse() {
 		const statements: Stmt[] = [];
@@ -155,7 +156,19 @@ export class RecursiveDescentParser {
 	}
 	private primary(): Expr {
 		if (this.match_and_advance([TokenType.NUMBER])) {
-			const literal: Literal = { type: "LiteralExpr", value: this.previous().literal! };
+			const num_value = this.previous().literal!;
+			let number_type;
+			if (this.match_and_advance([TokenType.IDENTIFIER])) {
+				number_type = this.previous().text;
+			} // this will look like "NUMBER IDENTIFIER?"
+			if (number_type !== undefined && !this.measurements.includes(number_type)) {
+				throw this.error(this.previous(), "Unknown measurement type.");
+			}
+			const literal: Literal = { 
+				type: "LiteralExpr",
+				value: num_value,
+				label: number_type,
+			};
 			return literal;
 		}
 		if (this.match_and_advance([TokenType.IDENTIFIER])) {

@@ -31,10 +31,10 @@ export class Tokenizer { // glorified function, but it follows crafting interpre
 	private current = 0;
 	private tokens: Token[] = [];
 	private unexpected_chars: { char: string, index: number }[] = [];
-	private keywords: { [key: string]: TokenType } = {
+	private keywords: {[key: string]: TokenType} = {
 		p: TokenType.PRINT,
 		root: TokenType.ROOT,
-	}
+	};
 
 	constructor(private out: Stdout, private str: string) {}
 
@@ -78,7 +78,7 @@ export class Tokenizer { // glorified function, but it follows crafting interpre
 			}
 		}
 		if (this.unexpected_chars.length >= 1) {
-			const e = `Unexpected character at characters [\n${this.unexpected_chars.map(c => `${c.char} at ${c.index}`).join(", ")}].`;
+			const e = `Unexpected character at characters [${this.unexpected_chars.map(c => `${c.char} at ${c.index}`).join(", ")}].`;
 			this.out.stdout(chalk.redBright(e));
 		}
 		this.tokens.push({ type: TokenType.EOF, text: "", literal: undefined });

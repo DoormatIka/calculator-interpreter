@@ -4,14 +4,16 @@ import readline from "node:readline";
 import {ASTPrinter} from "./lib/ast_printer.js";
 import {Interpreter} from "./lib/interpreter.js";
 import {RecursiveDescentParser} from "./lib/parser.js";
-import {Tokenizer} from "./lib/scanner.js";
-import {CalcError, ParseError, RuntimeError, Stdout} from "./lib/error.js";
-import {Callable} from "./lib/expr.js";
+import {TokenType, Tokenizer} from "./lib/scanner.js";
+import {CalcError, RuntimeError, Stdout} from "./lib/error.js";
 import {Cosine, Log, Sine, Tangent, Base2Log, Base10Log, HyperbolicCosine, HyperbolicSine, HyperbolicTangent, InverseHyperbolicCosine, InverseHyperbolicSine, InverseHyperbolicTangent, InverseSine, InverseCosine, InverseTangent} from "./functions/trig.js";
-import {Abs, Clock, Sqrt, Ceiling, Floor, Round, Signum, Maximum, Minimum, Cbrt } from "./functions/standard.js";
+import {Abs, Clock, Sqrt, Ceiling, Floor, Round, Signum, Maximum, Minimum, Cbrt, Num } from "./functions/standard.js";
 
 import fs from "node:fs";
-
+import {WeightedGraph} from "./lib/graph.js";
+import {Callable, LabelledNumber} from "./lib/expr.js";
+import {createConversionFunction} from "./functions/conversion.js";
+import { edges } from "./data/units.js";
 
 async function* initquestions(query: string) {
 	const cli = readline.createInterface({
@@ -23,11 +25,19 @@ async function* initquestions(query: string) {
 	}
 }
 
+const graph = new WeightedGraph();
 const out = new Stdout();
 const calc_err = new CalcError(out);
 const interpreter = new Interpreter(out, calc_err);
+
+graph.addJSONEdges(edges);
+
+const measurement_units = graph.getAllNodes();
+
 interpreter
+	// Standard Functions
 	.add_global("clock", new Clock())
+	.add_global("num", new Num()) // removes the label
 	// Math Functions
 	.add_global("sin", new Sine())
 	.add_global("cos", new Cosine())
@@ -38,8 +48,8 @@ interpreter
 	.add_global("sqrt", new Sqrt())
 	.add_global("cbrt", new Cbrt())
 	.add_global("abs", new Abs())
-	.add_global("pi", Math.PI)
-	.add_global("e", Math.E)
+	.add_global("pi", { num_value: Math.PI })
+	.add_global("e", { num_value: Math.E })
 	.add_global("ceil", new Ceiling())
 	.add_global("floor", new Floor())
 	.add_global("round", new Round())
@@ -55,17 +65,18 @@ interpreter
 	.add_global("acosh", new InverseHyperbolicCosine())
 	.add_global("asinh", new InverseHyperbolicSine())
 	.add_global("atanh", new InverseHyperbolicTangent());
+for (const unit of measurement_units) {
+	interpreter.add_global(unit, createConversionFunction(unit, graph));
+}
 const printer = new ASTPrinter();
 
 async function run_cli() {
 	for await (const answer of initquestions("[!!calc] >> ")) {
 		const tokenizer = new Tokenizer(out, answer as string);
 		const parsed_tokens = tokenizer.parse();
-		const parser = new RecursiveDescentParser(parsed_tokens, calc_err);
-
+		const parser = new RecursiveDescentParser(parsed_tokens, calc_err, measurement_units);
 		try {
 			const tree = parser.parse();
-			
 			if (tree && !calc_err.getHasError()) {
 				interpreter.interpret(tree);
 			}
@@ -83,13 +94,15 @@ function interpretFile(filename: string) {
 	const data = fs.readFileSync(`./benchmarks/${filename}`, { encoding: "utf8" });
 	const tokenizer = new Tokenizer(out, data);
 	const parsed_tokens = tokenizer.parse();
-	const parser = new RecursiveDescentParser(parsed_tokens, calc_err);
+	const parser = new RecursiveDescentParser(parsed_tokens, calc_err, measurement_units);
 	try {
 		const tree = parser.parse();
 		if (tree && !calc_err.getHasError()) {
 			interpreter.interpret(tree);
 		}
-	} catch (error: unknown) {}
+	} catch (error: unknown) {
+		console.log(error);
+	}
 
 	console.log(out.get_stdout());
 	out.clear_stdout();
@@ -105,3 +118,4 @@ async function runFileInterpreter() {
 }
 
 run_cli();
+// runFileInterpreter();
