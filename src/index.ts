@@ -13,6 +13,7 @@ import fs from "node:fs";
 import {WeightedGraph} from "./lib/graph.js";
 import {Callable, LabelledNumber} from "./lib/expr.js";
 import {createConversionFunction} from "./functions/conversion.js";
+import { edges } from "./data/units.js";
 
 async function* initquestions(query: string) {
 	const cli = readline.createInterface({
@@ -29,22 +30,7 @@ const out = new Stdout();
 const calc_err = new CalcError(out);
 const interpreter = new Interpreter(out, calc_err);
 
-graph // metric weights
-	.addEdge("kg", "g", 1000)
-	.addEdge("g", "dg", 10)
-	.addEdge("g", "cg", 100)
-	.addEdge("g", "mg", 1000)
-	.addEdge("g", "mcg", 1e+6)
-	.addEdge("g", "ng", 1e+9);
-graph // imperial to metric weight
-	.addEdge("lb", "g", 453.5924);
-graph // imperial weights
-	.addEdge("st", "lb", 14)
-	.addEdge("qr", "lb", 28)
-	// different types of tons
-	.addEdge("ston", "lb", 2000) // ton/short ton
-	.addEdge("lton", "lb", 2240) // long ton
-	.addEdge("mton", "lb", 2204.623) // metric ton
+graph.addJSONEdges(edges);
 
 const measurement_units = graph.getAllNodes();
 
