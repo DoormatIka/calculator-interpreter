@@ -60,10 +60,10 @@ p 0.8; // 4/5 (0.8)
 - Round by n decimals. `2 round 10.5237`
 - gcf(), lcd() function. (Support for any number of functions needed.)
 - Pushing values into equations `no idea how syntax would look like here.`
-- Algebra `simplify "x^2 + 5 = 0";`
-- Graphing `graph "6^2";`
-- Calculus `derive "x^6"` `integrate "x^6"` (big question mark here.)
-- Chaining `graph derive simplify "x^2 + 5 = 0";`
+- Algebra `simplify [x^2 + 5 = 0];`
+- Graphing `graph [6^2];`
+- Calculus `derive [x^6]` `integrate [x^6]` (big question mark here.)
+- Chaining `graph derive simplify [x^2 + 5 = 0];`
 
 ## Improvements
 - Misspellings should be detected. "Did you mean [variable name]?"
