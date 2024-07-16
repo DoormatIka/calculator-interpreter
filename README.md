@@ -52,6 +52,9 @@ p 0.8; // 4/5 (0.8)
 
 ## Doing
 - Support `cm(5'6"); p 5'6";`
+- Leaner syntax. 
+    - Removing the semicolon for one statement. `8*8 // prints 64`
+    - Automatically printing the last statement. `1+1; 2+2; // prints 4`
 
 ## Missing Features
 - Round by n decimals. `2 round 10.5237`
