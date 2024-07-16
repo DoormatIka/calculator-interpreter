@@ -22,11 +22,13 @@ export enum TokenType {
 
 	EOF,
 }
+// {  } array
+// [  ] equation
 
 /**
 	* Needs to be re-initialized every run.
 	*/
-export class Tokenizer { // glorified function, but it follows crafting interpreters' OOP practices ig
+export class Tokenizer {
 	private start = 0;
 	private current = 0;
 	private tokens: Token[] = [];

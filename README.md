@@ -14,6 +14,8 @@ p 4 root 6^4; // 6
 p 2^2 root 68^4; // 68
 rt = 3!; result = rt root 729; p result; // 3
 p g(10lb); // converting 10 pounds to grams, prints 4535.924g
+p 1/8; // 1/8 (0.125)
+p 0.8; // 4/5 (0.8)
 ```
 
 ## Syntax (Last item executes last)
@@ -44,13 +46,14 @@ p g(10lb); // converting 10 pounds to grams, prints 4535.924g
 ### Weight
 - `Metric: kg (kilogram), g (gram), dg (decigram), cg (centigram), mg (milligram), mcg (microgram), ng (nanogram)`
 - `Imperial: lb (pounds), st (stone), qr (quarter), ston (short ton), lton (long ton), mton (metric ton)`
+### Height
+- `Metric: km (kilometer), m (meter), mm (millimeter), cm (centimeter)`
+- `Imperial: in (inches), nmi (nautical miles), ft (feet), yd (yard), mi (mile)`
 
 ## Doing
-- Support height and length.
 - Support `cm(5'6"); p 5'6";`
 
 ## Missing Features
-- Print decimals to fractions. `pf 1/8;`
 - Round by n decimals. `2 round 10.5237`
 - gcf(), lcd() function. (Support for any number of functions needed.)
 - Pushing values into equations `no idea how syntax would look like here.`
