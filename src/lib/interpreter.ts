@@ -1,11 +1,11 @@
-import {ASTPrinter} from "./ast_printer.js";
+import chalk from "chalk";
+
 import {CalcError, RuntimeError, Stdout} from "./error.js";
 import {Grouping, Literal, Unary, Expr, Binary, Expression, Print, Stmt, VarStmt, VarExpr, Call, Callable, Post, LabelledNumber} from "./expr.js";
 import {Token, TokenType} from "./scanner.js";
 import {Environment} from "./environment.js";
-import { decimal_factorial, factorial } from "./math/factorial.js";
-import chalk from "chalk";
-import {WeightedGraph} from "./graph.js";
+import {decimal_factorial} from "./math/factorial.js";
+import {dec2frac} from "./math/dec2frac.js";
 
 
 /**
@@ -14,8 +14,6 @@ import {WeightedGraph} from "./graph.js";
 export class Interpreter {
 	private globals = new Environment<LabelledNumber | Callable>();
 	private environment = new Environment<LabelledNumber>();
-
-	private printer = new ASTPrinter();
 
 	constructor(private std: Stdout, private calc_error: CalcError) {}
 
@@ -36,17 +34,65 @@ export class Interpreter {
 	}
 	public execute(stmt: Stmt) {
 		switch (stmt.type) {
-			case "Expression":
+			case "Expression": {
 				const expression = stmt as Expression;
-				return this.evaluateExpressionStmt(expression);
-			case "Print":
+				this.evaluateExpressionStmt(expression);
+				break;
+			}
+			case "Print": {
 				const p = stmt as Print;
-				return this.evaluatePrintStmt(p);
-			case "Var":
+				const value = this.evaluatePrintStmt(p);
+				if (value) {
+					const val = chalk.yellow(`${value.num_value}${value.type ?? ""}`);
+					if (Number.isInteger(value.num_value)) {
+						this.std.stdout(val);
+						break;
+					}
+					const [numerator, denominator] = dec2frac(value.num_value);
+					this.std.stdout(chalk.yellow(`${numerator}/${denominator}${value.type ?? ""} (${val})`));
+				}
+				break;
+			}
+			case "Var": {
 				const v = stmt as VarStmt;
-				return this.evaluateVarStmt(v);
-			default:
-				return null;
+				this.evaluateVarStmt(v);
+				break;
+			}
+		}
+	}
+
+	// Stmt
+	public evaluateExpressionStmt(stmt: Expression) {
+		return this.evaluate(stmt.expression);
+	}
+	public evaluatePrintStmt(stmt: Print): LabelledNumber | undefined {
+		const value = this.evaluate(stmt.expression);
+		if (isLabelledNumber(value)) {
+			return value;
+		}
+	}
+	public evaluateVarStmt(stmt: VarStmt) {
+		const g_var = this.globals.get(stmt.name);
+		if (stmt.initializer === undefined) {
+			if (g_var === undefined) {
+				const runtime = new RuntimeError(stmt.name, `Variable needs to have an initializer.`);
+				throw this.runtimeError(runtime);
+			}
+			return g_var;
+		} else {
+			if (g_var !== undefined) {
+				if (g_var instanceof Callable) {
+					const runtime = new RuntimeError(stmt.name, `That function has already been defined. Please replace the name.`);
+					throw this.runtimeError(runtime);
+				}
+				const runtime = new RuntimeError(stmt.name, `Global variable can't be reassigned.`);
+				throw this.runtimeError(runtime);
+			}
+			const value = this.evaluate(stmt.initializer);
+			if (isLabelledNumber(value)) {
+				this.environment.define(stmt.name.text, value);
+				return value;
+			}
 		}
 	}
 
@@ -79,41 +125,6 @@ export class Interpreter {
 			default:
 				const t: Token = { type: TokenType.SEMICOLON, text: "???", literal: undefined };
 				throw this.runtimeError(new RuntimeError(t, "Something went terribly wrong."));
-		}
-	}
-
-	public evaluateExpressionStmt(stmt: Expression) {
-		return this.evaluate(stmt.expression);
-	}
-	public evaluatePrintStmt(stmt: Print) {
-		const value = this.evaluate(stmt.expression);
-		if (isLabelledNumber(value)) {
-			this.std.stdout(chalk.yellow(`${value.num_value}${value.type ?? ""}`));
-		}
-		return value;
-	}
-	public evaluateVarStmt(stmt: VarStmt) {
-		const g_var = this.globals.get(stmt.name);
-		if (stmt.initializer === undefined) {
-			if (g_var === undefined) {
-				const runtime = new RuntimeError(stmt.name, `Variable needs to have an initializer.`);
-				throw this.runtimeError(runtime);
-			}
-			return g_var;
-		} else {
-			if (g_var !== undefined) {
-				if (g_var instanceof Callable) {
-					const runtime = new RuntimeError(stmt.name, `That function has already been defined. Please replace the name.`);
-					throw this.runtimeError(runtime);
-				}
-				const runtime = new RuntimeError(stmt.name, `Global variable can't be reassigned.`);
-				throw this.runtimeError(runtime);
-			}
-			const value = this.evaluate(stmt.initializer);
-			if (isLabelledNumber(value)) {
-				this.environment.define(stmt.name.text, value);
-				return value;
-			}
 		}
 	}
 

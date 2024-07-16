@@ -9,11 +9,12 @@ import {CalcError, Stdout} from "./lib/error.js";
 import {Cosine, Log, Sine, Tangent, Base2Log, Base10Log, HyperbolicCosine, HyperbolicSine, HyperbolicTangent, InverseHyperbolicCosine, InverseHyperbolicSine, InverseHyperbolicTangent, InverseSine, InverseCosine, InverseTangent} from "./functions/trig.js";
 import {Abs, Clock, Sqrt, Ceiling, Floor, Round, Signum, Maximum, Minimum, Cbrt, Num } from "./functions/standard.js";
 
-import fs from "node:fs";
 import {WeightedGraph} from "./lib/graph.js";
 import {createConversionFunction} from "./functions/conversion.js";
 import { edges } from "./data/units.js";
 
+// rewrite this into a more low level approach.
+// store a string then put characters in there for every keypress
 async function* initquestions(query: string) {
 	const cli = readline.createInterface({
 		input: process.stdin,
@@ -85,33 +86,6 @@ async function run_cli() {
 		calc_err.resetErrors();
 		printer.clearStr();
 		interpreter.clear_variables();
-	}
-}
-
-function interpretFile(filename: string) {
-	const data = fs.readFileSync(`./benchmarks/${filename}`, { encoding: "utf8" });
-	const tokenizer = new Tokenizer(out, data);
-	const parsed_tokens = tokenizer.parse();
-	const parser = new RecursiveDescentParser(parsed_tokens, calc_err, measurement_units);
-	try {
-		const tree = parser.parse();
-		if (tree && !calc_err.getHasError()) {
-			interpreter.interpret(tree);
-		}
-	} catch (error: unknown) {
-		console.log(error);
-	}
-
-	console.log(out.get_stdout());
-	out.clear_stdout();
-	calc_err.resetErrors();
-	interpreter.clear_variables();
-}
-
-async function runFileInterpreter() {
-	for await (const file of initquestions("[import file] >> ")) {
-		console.log("Running: " + chalk.bgYellow(chalk.black(file)));
-		interpretFile(file as string);
 	}
 }
 

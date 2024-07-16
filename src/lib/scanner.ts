@@ -22,6 +22,8 @@ export enum TokenType {
 
 	EOF,
 }
+// {  } array
+// [  ] equation
 
 /**
 	* Needs to be re-initialized every run.
