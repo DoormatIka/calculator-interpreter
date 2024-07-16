@@ -52,6 +52,7 @@ p g(10lb); // converting 10 pounds to grams, prints 4535.924g
 ## Missing Features
 - Print decimals to fractions. `pf 1/8;`
 - Round by n decimals. `2 round 10.5237`
+- gcf(), lcd() function. (Support for any number of functions needed.)
 - Pushing values into equations `no idea how syntax would look like here.`
 - Algebra `simplify "x^2 + 5 = 0";`
 - Graphing `graph "6^2";`
