@@ -22,4 +22,17 @@ const weight: JSONEdges = [
 	{from: "mton", to: "lb", forward_weight: 2204.623, backward_weight: 1/2204.623},
 ];
 
-export const edges: JSONEdges = [...weight];
+const length: JSONEdges = [
+	{from: "m", to: "mm", forward_weight: 1000, backward_weight: 1/1000},
+	{from: "m", to: "cm", forward_weight: 100, backward_weight: 1/100},
+	{from: "km", to: "m", forward_weight: 1000, backward_weight: 1/1000},
+
+	{from: "m", to: "in", forward_weight: 39.370078740157, backward_weight: 1/39.370078740157},
+	{from: "nmi", to: "m", forward_weight: 1852, backward_weight: 1/1852},
+
+	{from: "ft", to: "in", forward_weight: 12, backward_weight: 1/12},
+	{from: "yd", to: "in", forward_weight: 36, backward_weight: 1/36},
+	{from: "mi", to: "in", forward_weight: 63360, backward_weight: 1/63360},
+];
+
+export const edges: JSONEdges = [...weight, ...length];

@@ -4,14 +4,13 @@ import readline from "node:readline";
 import {ASTPrinter} from "./lib/ast_printer.js";
 import {Interpreter} from "./lib/interpreter.js";
 import {RecursiveDescentParser} from "./lib/parser.js";
-import {TokenType, Tokenizer} from "./lib/scanner.js";
-import {CalcError, RuntimeError, Stdout} from "./lib/error.js";
+import {Tokenizer} from "./lib/scanner.js";
+import {CalcError, Stdout} from "./lib/error.js";
 import {Cosine, Log, Sine, Tangent, Base2Log, Base10Log, HyperbolicCosine, HyperbolicSine, HyperbolicTangent, InverseHyperbolicCosine, InverseHyperbolicSine, InverseHyperbolicTangent, InverseSine, InverseCosine, InverseTangent} from "./functions/trig.js";
 import {Abs, Clock, Sqrt, Ceiling, Floor, Round, Signum, Maximum, Minimum, Cbrt, Num } from "./functions/standard.js";
 
 import fs from "node:fs";
 import {WeightedGraph} from "./lib/graph.js";
-import {Callable, LabelledNumber} from "./lib/expr.js";
 import {createConversionFunction} from "./functions/conversion.js";
 import { edges } from "./data/units.js";
 
@@ -31,7 +30,6 @@ const calc_err = new CalcError(out);
 const interpreter = new Interpreter(out, calc_err);
 
 graph.addJSONEdges(edges);
-
 const measurement_units = graph.getAllNodes();
 
 interpreter
