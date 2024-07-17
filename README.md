@@ -1,21 +1,39 @@
 # Calculator
 
 ## Usage
-```
-p 1 + 1; // 2
-i = 1; p i + 1; // 2
+```js
+// Semicolons are optional when there's only one statement.
+1 + 1 // 2
+1 + 1; // 2
 
-1 + 1; 2 + 2; // prints nothing.
+// If there's multiple statements though, you need semicolons.
+i = 1; i + 1; // 2
+// Else, it errors out.
+i = 1 i + 1 // Error: Unknown measurement type. [at 'i']
 
-p -sqrt(4); // 2
-p sqrt(4)^2; // 4
+// It also auto prints the last statement. These two lines of code are the same.
+1 + 1; 2 + 2; // 4
+1 + 1; p 2 + 2; // 4
+// You can print multiple times.
+p 1 + 1; p 2 + 2;
+// 2
+// 4
 
-p 4 root 6^4; // 6
-p 2^2 root 68^4; // 68
+-sqrt(4) // -2
+
+sqrt(4)^2 // 4
+
+4 root 6^4 // 6
+
+2^2 root 68^4 // 68
+
 rt = 3!; result = rt root 729; p result; // 3
-p g(10lb); // converting 10 pounds to grams, prints 4535.924g
-p 1/8; // 1/8 (0.125)
-p 0.8; // 4/5 (0.8)
+
+g(10lb) // converting 10 pounds to grams, prints 4535.924g
+
+1/8 // 1/8 (0.125)
+
+0.8 // 4/5 (0.8)
 ```
 
 ## Syntax (Last item executes last)

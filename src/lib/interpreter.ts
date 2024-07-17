@@ -7,6 +7,14 @@ import {Environment} from "./environment.js";
 import {decimal_factorial} from "./math/factorial.js";
 import {dec2frac} from "./math/dec2frac.js";
 
+function formatPrint(value: LabelledNumber): string {
+	const val = chalk.yellow(`${value.num_value}${value.type ?? ""}`);
+	if (Number.isInteger(value.num_value)) {
+		return val;
+	}
+	const [numerator, denominator] = dec2frac(value.num_value);
+	return chalk.yellow(`${numerator}/${denominator}${value.type ?? ""} (${val})`);
+}
 
 /**
 	* Doesn't need to be re-initialized every run
@@ -21,8 +29,12 @@ export class Interpreter {
 		* Throws some errors!
 		*/
 	public interpret(statements: Stmt[]) {
-		for (const statement of statements) {
-			this.execute(statement);
+		for (let i = 0; i < statements.length; i++) {
+			const statement = statements[i];
+			const num = this.execute(statement);
+			if (i === statements.length - 1 && num) {
+				this.std.stdout(formatPrint(num));
+			}
 		}
 	}
 	public clear_variables() {
@@ -32,24 +44,17 @@ export class Interpreter {
 		this.globals.define(name, callable);
 		return this;
 	}
-	public execute(stmt: Stmt) {
+	public execute(stmt: Stmt): LabelledNumber | undefined {
 		switch (stmt.type) {
 			case "Expression": {
 				const expression = stmt as Expression;
-				this.evaluateExpressionStmt(expression);
-				break;
+				return this.evaluateExpressionStmt(expression);
 			}
 			case "Print": {
 				const p = stmt as Print;
 				const value = this.evaluatePrintStmt(p);
 				if (value) {
-					const val = chalk.yellow(`${value.num_value}${value.type ?? ""}`);
-					if (Number.isInteger(value.num_value)) {
-						this.std.stdout(val);
-						break;
-					}
-					const [numerator, denominator] = dec2frac(value.num_value);
-					this.std.stdout(chalk.yellow(`${numerator}/${denominator}${value.type ?? ""} (${val})`));
+					this.std.stdout(formatPrint(value));
 				}
 				break;
 			}
@@ -62,8 +67,8 @@ export class Interpreter {
 	}
 
 	// Stmt
-	public evaluateExpressionStmt(stmt: Expression) {
-		return this.evaluate(stmt.expression);
+	public evaluateExpressionStmt(stmt: Expression): LabelledNumber {
+		return this.evaluate(stmt.expression) as LabelledNumber;
 	}
 	public evaluatePrintStmt(stmt: Print): LabelledNumber | undefined {
 		const value = this.evaluate(stmt.expression);

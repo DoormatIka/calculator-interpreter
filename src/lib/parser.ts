@@ -234,7 +234,7 @@ export class RecursiveDescentParser {
 		if (this.check(type)) {
 			return this.advance();
 		}
-		throw this.error(this.peek(), message);
+		throw this.error(this.previous(), message);
 	}
 
 	private error(token: Token, message: string): ParseError {

@@ -83,6 +83,10 @@ export class Tokenizer {
 			const e = `Unexpected character at characters [${this.unexpected_chars.map(c => `${c.char} at ${c.index}`).join(", ")}].`;
 			this.out.stdout(chalk.redBright(e));
 		}
+		if (this.tokens.findIndex(v => v.type === TokenType.SEMICOLON) === -1) {
+			// optional semicolon.
+			this.tokens.push({ type: TokenType.SEMICOLON, text: ";", literal: undefined });
+		}
 		this.tokens.push({ type: TokenType.EOF, text: "", literal: undefined });
 		return this.tokens;
 	}
