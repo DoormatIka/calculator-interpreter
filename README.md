@@ -70,15 +70,18 @@ g(10lb) // converting 10 pounds to grams, prints 4535.924g
 
 ## Doing
 - Support `cm(5'6"); p 5'6";`
+- Leaner syntax. 
+    - Removing the semicolon for one statement. `8*8 // prints 64`
+    - Automatically printing the last statement. `1+1; 2+2; // prints 4`
 
 ## Missing Features
 - Round by n decimals. `2 round 10.5237`
 - gcf(), lcd() function. (Support for any number of functions needed.)
 - Pushing values into equations `no idea how syntax would look like here.`
-- Algebra `simplify "x^2 + 5 = 0";`
-- Graphing `graph "6^2";`
-- Calculus `derive "x^6"` `integrate "x^6"` (big question mark here.)
-- Chaining `graph derive simplify "x^2 + 5 = 0";`
+- Algebra `simplify [x^2 + 5 = 0];`
+- Graphing `graph [6^2];`
+- Calculus `derive [x^6]` `integrate [x^6]` (big question mark here.)
+- Chaining `graph derive simplify [x^2 + 5 = 0];`
 
 ## Improvements
 - Misspellings should be detected. "Did you mean [variable name]?"
