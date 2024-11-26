@@ -1,4 +1,3 @@
-import chalk from "chalk";
 import readline from "node:readline";
 
 import {ASTPrinter} from "./lib/ast_printer.js";
@@ -12,6 +11,7 @@ import {Abs, Clock, Sqrt, Ceiling, Floor, Round, Signum, Maximum, Minimum, Cbrt,
 import {WeightedGraph} from "./lib/graph.js";
 import {createConversionFunction} from "./functions/conversion.js";
 import { edges } from "./data/units.js";
+import {Stmt} from "./lib/expr.js";
 
 // rewrite this into a more low level approach.
 // store a string then put characters in there for every keypress
@@ -75,10 +75,16 @@ async function run_cli() {
 		const parsed_tokens = tokenizer.parse();
 		const parser = new RecursiveDescentParser(parsed_tokens, calc_err, measurement_units);
 		try {
-			const tree = parser.parse();
+			const tree: Stmt[] = parser.parse();
+			for (const node of tree) {
+				const s = printer.parseStmt(node);
+				console.log(s);
+			}
+			/*
 			if (tree && !calc_err.getHasError()) {
 				interpreter.interpret(tree);
 			}
+			*/
 		} catch (error: unknown) {}
 
 		console.log(out.get_stdout());

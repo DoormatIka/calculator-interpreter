@@ -76,18 +76,18 @@ export class Signum extends Callable {
 }
 
 export class Maximum extends Callable {
-    public arity: number = 2; 
+	public variable_arity: number = 2;
     constructor() { super(); }
     call(interpreter: Interpreter, args: LabelledNumber[]) {
-		return { num_value: Math.max(args[0].num_value, args[1].num_value), type: args[0].type };
+		return { num_value: Math.max(...args.map(c => c.num_value)), type: args[0].type };
     };
 }
 
 export class Minimum extends Callable {
-    public arity: number = 2; 
+	public variable_arity: number = 2;
     constructor() { super(); }
     call(interpreter: Interpreter, args: LabelledNumber[]) {
-		return { num_value: Math.min(args[0].num_value, args[1].num_value), type: args[0].type }; 
+		return { num_value: Math.min(...args.map(c => c.num_value)), type: args[0].type }; 
     };
 }
 

@@ -34,17 +34,21 @@ g(10lb) // converting 10 pounds to grams, prints 4535.924g
 1/8 // 1/8 (0.125)
 
 0.8 // 4/5 (0.8)
+
+// array support for lcd & gcd functions.
+p [1, 2]; // [1,2]
+a = [5, 6, 7]; p a[1]; // 6
 ```
 
 ## Syntax (Last item executes last)
-0. Unary `-1`
-1. Parenthesis `((1 + 1) * 2)` and Absolute `|-6^4 + 2|`
-2. Exponent `6^4;`
-3. Factorial `6.4!;`
-4. nth Root `n root m;`
-5. Multiplication, Division `(*, /)`
-6. Addition, Subtraction `(+, -)`
-7. Print `p 6;`
+1. Unary `-1`
+2. Parenthesis `((1 + 1) * 2)` and Absolute `|-6^4 + 2|`
+3. Exponent `6^4;`
+4. Factorial `6.4!;`
+5. nth Root `n root m;`
+6. Multiplication, Division `(*, /)`
+7. Addition, Subtraction `(+, -)`
+8. Print `p 6;`
 
 ## Functions & Variables
 - Pi Value `pi;`
@@ -56,9 +60,9 @@ g(10lb) // converting 10 pounds to grams, prints 4535.924g
 - Sin, Cos, Tan `sin(5); cos(5); tan(5);`
 - Sinh, Cosh, Tanh `sinh(5); cosh(5), tanh(5);`
 - Asin, Acos, Atan `asin(5); acos(5); atan(5);`
-- Asinh, Acosh, Atanh `acosh(5); asinh(5); atanh(5)`;
+- Asinh, Acosh, Atanh `acosh(5); asinh(5); atanh(5);`
 - Log, Log2, Log10 `log(5); log2(5); log10(5);`
-- Max, Min of two numbers `max(5, 10); min(1, 0);`
+- Max, Min of any numbers `max(5, 10); min(1, 0, 5);`
 
 ## Supported Units
 ### Weight
@@ -76,7 +80,7 @@ g(10lb) // converting 10 pounds to grams, prints 4535.924g
 
 ## Missing Features
 - Round by n decimals. `2 round 10.5237`
-- gcf(), lcd() function. (Support for any number of functions needed.)
+- gcf(), lcd() function. (Support for any number of results needed.)
 - Pushing values into equations `no idea how syntax would look like here.`
 - Algebra `simplify [x^2 + 5 = 0];`
 - Graphing `graph [6^2];`

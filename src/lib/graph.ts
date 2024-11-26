@@ -23,7 +23,7 @@ export class WeightedGraph {
 		}
 		return this;
 	}
-	addEdge(from: string, to: string, weight: number, reversal_weight: number) {
+	addEdge(from: string, to: string, weight: number) {
 		if (!this.adj.has(from)) {
 			this.addNode(from);
 		}
@@ -31,7 +31,7 @@ export class WeightedGraph {
 			this.addNode(to);
 		}
 		const edge = new Edge<number>(from, to, weight); 
-		const reversal_edge = new Edge<number>(to, from, reversal_weight); 
+		const reversal_edge = new Edge<number>(to, from, 1/weight); 
 		this.adj.get(from)?.push(edge);
 		this.adj.get(to)?.push(reversal_edge);
 		return this;
@@ -103,8 +103,7 @@ export class WeightedGraph {
 			this.addEdge(
 				edge.from,
 				edge.to,
-				edge.forward_weight,
-				edge.backward_weight
+				edge.forward_weight
 			);
 		}
 	}

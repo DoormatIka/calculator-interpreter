@@ -1,4 +1,4 @@
-import {Binary, Call, Expr, Expression, Grouping, Literal, Post, Print, Stmt, Unary, VarExpr, VarStmt} from "./expr.js";
+import {ArrayExpr, Binary, Call, Expr, Expression, Grouping, Literal, Post, Print, Stmt, Unary, VarExpr, VarStmt} from "./expr.js";
 
 /**
 	* Doesn't need to be re-initialized every run.
@@ -57,7 +57,7 @@ export class ASTPrinter {
 
 			case "LiteralExpr":
 				const literal_node = node as Literal;
-				this.str += `[Literal] ${literal_node.value}, type: ${literal_node.label}`;
+				this.str += `[Literal] ${literal_node.value}${literal_node.label ? literal_node.label : ""}`;
 				break;
 
 			case "UnaryExpr":
@@ -71,6 +71,12 @@ export class ASTPrinter {
 			case "VarExpr":
 				const var_node = node as VarExpr;
 				this.str += `[VarExpr] ${var_node.name.text}`;
+				if (var_node.indexer) {
+					this.str += `( [Indexer] `
+					this.parseExpr(var_node.indexer);
+					this.str += " )";
+				}
+				this.str += " )";
 				break;
 
 			case "PostExpr":
@@ -82,19 +88,35 @@ export class ASTPrinter {
 				break;
 			case "CallExpr":
 				const call = node as Call;
-				this.str += `( [Call]`;
+				this.str += `( [Call] `;
 				this.parseExpr(call.callee);
 				for (const arg of call.arguments) {
 					this.parseExpr(arg);
 				}
 				this.str += " )";
 				break;
-
+			case "ArrayExpr":
+				const arr = node as ArrayExpr;
+				this.str += `( [Array] `;
+				for (const elem of arr.elements) {
+					this.parseExpr(elem);
+					this.str += ", "
+				}
+				if (arr.indexer) {
+					this.str += `( [Indexer] `
+					this.parseExpr(arr.indexer);
+					this.str += " )";
+				}
+				this.str += " )";
+				break;
 			default:
-				console.log("broo what happened ;~;");
+				console.log(`broo what happened ;~;`);
+				console.log(node);
 				break;
 		}
 		return this.str;
 	}
+
+
 }
 

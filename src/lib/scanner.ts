@@ -8,6 +8,12 @@ export type Token = {
 }
 
 export enum TokenType {
+	LEFT_SQ,
+	RIGHT_SQ,
+
+	LEFT_CURLY,
+	RIGHT_CURLY,
+
 	LEFT_PAREN, 
 	RIGHT_PAREN,
 	DOT, MINUS, PLUS, SLASH, STAR,
@@ -22,8 +28,8 @@ export enum TokenType {
 
 	EOF,
 }
-// {  } array
-// [  ] equation
+// [  ] array
+// {  } equation
 
 /**
 	* Needs to be re-initialized every run.
@@ -50,6 +56,10 @@ export class Tokenizer {
 				case '\t': // skipping whitespace
 				case '\n':
 					break;
+				case "[": this.add_token(TokenType.LEFT_SQ); break;
+				case "]": this.add_token(TokenType.RIGHT_SQ); break;
+				case "}": this.add_token(TokenType.LEFT_CURLY); break;
+				case "{": this.add_token(TokenType.RIGHT_CURLY); break;
 				case "(": this.add_token(TokenType.LEFT_PAREN); break;
 				case ")": this.add_token(TokenType.RIGHT_PAREN); break;
 				case ".": this.add_token(TokenType.DOT); break;

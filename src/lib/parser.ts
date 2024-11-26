@@ -1,6 +1,6 @@
 
 import {CalcError, ParseError} from "./error.js";
-import {Binary, Expr, Grouping, Literal, Stmt, Unary, Print, Expression, VarStmt, VarExpr, Callable, Call, Post} from "./expr.js";
+import {Binary, Expr, Grouping, Literal, Stmt, Unary, Print, Expression, VarStmt, VarExpr, Callable, Call, Post, ArrayExpr} from "./expr.js";
 import {Token, TokenType} from "./scanner.js";
 
 
@@ -143,9 +143,6 @@ export class RecursiveDescentParser {
 		const args: Expr[] = [];
 		if (!this.check(TokenType.RIGHT_PAREN)) {
 			do {
-				if (args.length >= 2) { // 2 for testing purposes.
-					this.error(this.peek(), "Can't have more than 2 arguments.");
-				}
 				args.push(this.expression());
 			} while (this.match_and_advance([TokenType.COMMA]));
 		}
@@ -154,44 +151,94 @@ export class RecursiveDescentParser {
 		const call_obj: Call = { type: "CallExpr", callee: callee, paren: paren, arguments: args };
 		return call_obj;
 	}
+
 	private primary(): Expr {
 		if (this.match_and_advance([TokenType.NUMBER])) {
-			const num_value = this.previous().literal!;
-			let number_type;
-			if (this.match_and_advance([TokenType.IDENTIFIER])) {
-				number_type = this.previous().text;
-			} // this will look like "NUMBER IDENTIFIER?"
-			if (number_type !== undefined && !this.measurements.includes(number_type)) {
-				throw this.error(this.previous(), "Unknown measurement type.");
-			}
-			const literal: Literal = { 
-				type: "LiteralExpr",
-				value: num_value,
-				label: number_type,
-			};
-			return literal;
+			return this.num();
 		}
 		if (this.match_and_advance([TokenType.IDENTIFIER])) {
-			const varexpr: VarExpr = { type: "VarExpr", name: this.previous() };
-			return varexpr;
+			return this.var();
 		}
-		if (this.match_and_advance([TokenType.LEFT_PAREN, TokenType.BAR])) {
-			const prev = this.previous();
-			const expr = this.expression();
-			switch (prev.type) {
-				case TokenType.LEFT_PAREN:
-					this.consume(TokenType.RIGHT_PAREN, "Expected ')' after expression.");
-					break;
-				case TokenType.BAR:
-					this.consume(TokenType.BAR, "Expected '|' after expression.");
-					break;
-				default:
-					throw this.error(prev, "Something went horribly wrong when parsing groupings.");
-			}
-			const grouping: Grouping = {type: "GroupingExpr", operator: prev, expression: expr};
-			return grouping;
+		if (this.match_and_advance([TokenType.LEFT_SQ])) {
+			return this.array();
 		}
+		/*
+		if (this.match_and_advance([TokenType.LEFT_CURLY])) {
+			// LATEX PARSER HERE!!!
+		}
+		*/
+		if (this.match_and_advance([TokenType.LEFT_PAREN, TokenType.BAR, TokenType.LEFT_SQ])) {
+			return this.grouping();
+		}
+
 		throw this.error(this.peek(), "Expected expression.");
+	}
+
+	private num() {
+		const num_value = this.previous().literal!;
+		let number_type;
+		if (this.match_and_advance([TokenType.IDENTIFIER])) {
+			number_type = this.previous().text;
+		} // this will look like "NUMBER IDENTIFIER?"
+		if (number_type !== undefined && !this.measurements.includes(number_type)) {
+			throw this.error(this.previous(), "Unknown measurement type.");
+		}
+		const literal: Literal = { 
+			type: "LiteralExpr",
+			value: num_value,
+			label: number_type,
+		};
+		return literal;
+	}
+
+	private var() {
+		const v = this.previous();
+		const index = this.indexer();
+		const varexpr: VarExpr = { type: "VarExpr", name: v, indexer: index };
+		return varexpr;
+	}
+	private array() {
+		const elements = this.parse_elements();
+		this.consume(TokenType.RIGHT_SQ, "Expected ']' after expression.");
+
+		const index = this.indexer();
+		const arr_obj: ArrayExpr = { elements: elements, type: "ArrayExpr", indexer: index };
+		return arr_obj;
+	}
+
+	private indexer(): Expr | undefined {
+		let index;
+		if (this.match_and_advance([TokenType.LEFT_SQ])) {
+			const indexer = this.expression();
+			this.consume(TokenType.RIGHT_SQ, "Expected ']' after expression.");
+			index = indexer;
+		}
+		return index;
+	}
+
+	private grouping() {
+		const prev = this.previous();
+		const expr = this.expression();
+		switch (prev.type) {
+			case TokenType.LEFT_PAREN:
+				this.consume(TokenType.RIGHT_PAREN, "Expected ')' after expression.");
+				break;
+			case TokenType.BAR:
+				this.consume(TokenType.BAR, "Expected '|' after expression.");
+				break;
+			default:
+				throw this.error(prev, "Something went horribly wrong when parsing groupings.");
+		}
+		const grouping: Grouping = {type: "GroupingExpr", operator: prev, expression: expr};
+		return grouping;
+	}
+
+	private parse_elements(): Expr[] {
+		const args: Expr[] = [];
+		do {
+			args.push(this.expression());
+		} while (this.match_and_advance([TokenType.COMMA]));
+		return args;
 	}
 
 	// separate this into a separate class later.
