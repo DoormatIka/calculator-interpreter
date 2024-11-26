@@ -1,4 +1,22 @@
 # Calculator
+Hello! This is used in the Kogasa discord bot that has been my side project
+for my entire university life.
+
+Calculator runs on Recursive Descent Parsing, and interprets based on that.
+Why recursive descent? It's fast enough.
+
+Why TS/JS? I was supposed to move from JS to Rust, but I realize that I would have to
+do some FFI business with Rust and JS (because my bot was made in JS). 
+I'm not dealing with that. >_>
+
+Calculator is fast enough already. (I have no proper benchmarks to back this up.)
+
+
+A weird quirk of this is it treats variables as an identifier and checks at runtime if its a function or value.
+
+I *would* change it to determine at parsing but then I break everything with not many benefits to the change.
+(Well, error messages would be more helpful?)
+
 
 ## Usage
 ```js
@@ -92,22 +110,3 @@ a = [5, 6, 7]; p a[1]; // 6
 
 ## Installation
 Please `npm install`, `npx tsc` and `node build/index.js`.
-
-### Dev Notes
-Hello! This is used in the Kogasa discord bot that has been my side project
-for my entire university life.
-
-Calculator runs on Recursive Descent Parsing, and interprets based on that.
-Why recursive descent? It's fast enough.
-
-Why TS/JS? I was supposed to move from JS to Rust, but I realize that I would have to
-do some FFI business with Rust and JS (because my bot was made in JS). 
-I'm not dealing with that. >_>
-
-Calculator is fast enough already. (I have no proper benchmarks to back this up.)
-
-
-A weird quirk of this is it treats variables as an identifier and checks at runtime if its a function or value.
-
-I *would* change it to determine at parsing but then I break everything with not many benefits to the change.
-(Well, error messages would be more helpful?)
