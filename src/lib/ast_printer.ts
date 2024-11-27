@@ -11,6 +11,13 @@ export class ASTPrinter {
 		this.str = "";
 	}
 
+	parseStmts(nodes: Stmt[]) {
+		for (const node of nodes) {
+			const s = this.parseStmt(node);
+			console.log(s);
+		}
+	}
+
 	parseStmt(node: Stmt) {
 		switch (node.type) {
 			case "Expression":

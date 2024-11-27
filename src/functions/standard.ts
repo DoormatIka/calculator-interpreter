@@ -1,4 +1,4 @@
-import {Callable, LabelledNumber} from "../lib/expr.js";
+import {ArrayType, Callable, LabelledNumber} from "../lib/expr.js";
 import {Interpreter} from "../lib/interpreter.js";
 
 export class Num extends Callable {
@@ -89,5 +89,18 @@ export class Minimum extends Callable {
     call(interpreter: Interpreter, args: LabelledNumber[]) {
 		return { num_value: Math.min(...args.map(c => c.num_value)), type: args[0].type }; 
     };
+}
+
+export class LCD extends Callable {
+	public variable_arity: number = 2;
+    constructor() { super(); }
+	call(interpreter: Interpreter, args: LabelledNumber[]): LabelledNumber | ArrayType {
+		return {
+			elements: [
+				{ num_value: 1, type: "kg" },
+				{ num_value: 5, type: "kg" },
+			],
+		};
+	}
 }
 

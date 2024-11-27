@@ -1,7 +1,7 @@
 import chalk from "chalk";
 
 import {CalcError, RuntimeError, Stdout} from "./error.js";
-import {Grouping, Literal, Unary, Expr, Binary, Expression, Print, Stmt, VarStmt, VarExpr, Call, Callable, Post, LabelledNumber, ArrayType, ArrayExpr} from "./expr.js";
+import {Grouping, Literal, Unary, Expr, Binary, Expression, Print, Stmt, VarStmt, VarExpr, Call, Callable, Post, LabelledNumber, ArrayType, ArrayExpr, isArrayType, isLabelledNumber} from "./expr.js";
 import {Token, TokenType} from "./scanner.js";
 import {Environment} from "./environment.js";
 import {decimal_factorial} from "./math/factorial.js";
@@ -48,10 +48,7 @@ export class Interpreter {
 	public interpret(statements: Stmt[]) {
 		for (let i = 0; i < statements.length; i++) {
 			const statement = statements[i];
-			const num = this.execute(statement);
-			if (i === statements.length - 1 && num) {
-				this.std.stdout(formatPrint(num));
-			}
+			this.execute(statement);
 		}
 	}
 	public clear_variables() {
@@ -184,7 +181,7 @@ export class Interpreter {
 			}
 			try {
 				const num = callable.call(this, args);
-				return { num_value: num.num_value, type: num.type };
+				return num;
 			} catch (err: unknown) {
 				const runtime = err as RuntimeError;
 				throw this.runtimeError(runtime);
@@ -366,16 +363,6 @@ export class Interpreter {
 		this.calc_error.runtimeError(err);
 		return err;
 	}
-	private index() {
-		
-	}
 }
 
 
-function isArrayType(num: Expr | LabelledNumber | Callable | number | ArrayType): num is ArrayType {
-	return (num as ArrayType).elements !== undefined;
-}
-
-function isLabelledNumber(num: Expr | LabelledNumber | Callable | number | ArrayType): num is LabelledNumber {
-	return (num as LabelledNumber).num_value !== undefined;
-}

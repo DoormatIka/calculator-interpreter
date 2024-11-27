@@ -6,7 +6,7 @@ import {RecursiveDescentParser} from "./lib/parser.js";
 import {Tokenizer} from "./lib/scanner.js";
 import {CalcError, Stdout} from "./lib/error.js";
 import {Cosine, Log, Sine, Tangent, Base2Log, Base10Log, HyperbolicCosine, HyperbolicSine, HyperbolicTangent, InverseHyperbolicCosine, InverseHyperbolicSine, InverseHyperbolicTangent, InverseSine, InverseCosine, InverseTangent} from "./functions/trig.js";
-import {Abs, Clock, Sqrt, Ceiling, Floor, Round, Signum, Maximum, Minimum, Cbrt, Num } from "./functions/standard.js";
+import {Abs, Clock, Sqrt, Ceiling, Floor, Round, Signum, Maximum, Minimum, Cbrt, Num, LCD } from "./functions/standard.js";
 
 import {WeightedGraph} from "./lib/graph.js";
 import {createConversionFunction} from "./functions/conversion.js";
@@ -63,7 +63,8 @@ interpreter
 	.add_global("tanh", new HyperbolicTangent())
 	.add_global("acosh", new InverseHyperbolicCosine())
 	.add_global("asinh", new InverseHyperbolicSine())
-	.add_global("atanh", new InverseHyperbolicTangent());
+	.add_global("atanh", new InverseHyperbolicTangent())
+	.add_global("lcd", new LCD())
 for (const unit of measurement_units) {
 	interpreter.add_global(unit, createConversionFunction(unit, graph));
 }
@@ -77,14 +78,11 @@ async function run_cli() {
 		try {
 			const tree: Stmt[] = parser.parse();
 			for (const node of tree) {
-				const s = printer.parseStmt(node);
-				console.log(s);
+				printer.parseStmt(node);
 			}
-			/*
 			if (tree && !calc_err.getHasError()) {
 				interpreter.interpret(tree);
 			}
-			*/
 		} catch (error: unknown) {}
 
 		console.log(out.get_stdout());

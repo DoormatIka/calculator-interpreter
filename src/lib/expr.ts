@@ -12,9 +12,16 @@ export interface ArrayType {
 export class Callable {
 	public arity: number = 0;
 	public variable_arity: number = 0; // 0 = disabled variable arity.
-	call(interpreter: Interpreter, args: LabelledNumber[]): LabelledNumber {
+	call(interpreter: Interpreter, args: LabelledNumber[]): LabelledNumber | ArrayType {
 		return {num_value: 0};
 	};
+}
+
+export function isArrayType(num: Expr | LabelledNumber | Callable | number | ArrayType): num is ArrayType {
+	return (num as ArrayType).elements !== undefined;
+}
+export function isLabelledNumber(num: Expr | LabelledNumber | Callable | number | ArrayType): num is LabelledNumber {
+	return (num as LabelledNumber).num_value !== undefined;
 }
 
 // EXPRs
@@ -79,4 +86,14 @@ export interface Print extends Stmt {
 export interface VarStmt extends Stmt { // declares a variable.
 	name: Token,
 	initializer: Expr,
+}
+
+export function isExprStmt(num: Stmt): num is Expression {
+	return num.type === "Expression"
+}
+export function isPrintStmt(num: Stmt): num is Print {
+	return num.type === "Print"
+}
+export function isVarStmt(num: Stmt): num is VarStmt {
+	return num.type === "Var"
 }

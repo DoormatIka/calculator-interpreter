@@ -1,6 +1,6 @@
 
 import {CalcError, ParseError} from "./error.js";
-import {Binary, Expr, Grouping, Literal, Stmt, Unary, Print, Expression, VarStmt, VarExpr, Callable, Call, Post, ArrayExpr} from "./expr.js";
+import {Binary, Expr, Grouping, Literal, Stmt, Unary, Print, Expression, VarStmt, VarExpr, Callable, Call, Post, ArrayExpr, isExprStmt} from "./expr.js";
 import {Token, TokenType} from "./scanner.js";
 
 
@@ -21,6 +21,11 @@ export class RecursiveDescentParser {
 			if (declaration) {
 				statements.push(declaration);
 			}
+		}
+		const last = statements.at(-1);
+		if (last && isExprStmt(last)) {
+			const p: Print = {type: "Print", expression: last.expression};
+			statements[statements.length - 1] = p;
 		}
 		return statements;
 	}
