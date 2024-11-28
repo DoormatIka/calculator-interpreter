@@ -81,6 +81,8 @@ a = [5, 6, 7]; p a[1]; // 6
 - Asinh, Acosh, Atanh `acosh(5); asinh(5); atanh(5);`
 - Log, Log2, Log10 `log(5); log2(5); log10(5);`
 - Max, Min of any numbers `max(5, 10); min(1, 0, 5);`
+- LCM, GCD of any numbers `lcm(10, 20, 3); gcd(9, 56);`
+- Factor a number `factor(60);`
 
 ## Supported Units
 ### Weight
@@ -98,7 +100,6 @@ a = [5, 6, 7]; p a[1]; // 6
 
 ## Missing Features
 - Round by n decimals. `2 round 10.5237`
-- gcf(), lcd() function. (Support for any number of results needed.)
 - Pushing values into equations `no idea how syntax would look like here.`
 - Algebra `simplify [x^2 + 5 = 0];`
 - Graphing `graph [6^2];`

@@ -9,27 +9,23 @@ import {dec2frac} from "./math/dec2frac.js";
 
 function formatPrint(value: LabelledNumber | ArrayType): string {
 	if (isLabelledNumber(value)) {
-		const val = chalk.yellow(`${value.num_value}${value.type ?? ""}`);
-		if (Number.isInteger(value.num_value)) {
-			return val;
-		} else {
-			const whole_part = Math.floor(value.num_value);
-			const decimal_part = value.num_value - whole_part;
-
-			const [numerator, denominator] = dec2frac(decimal_part);
-			return chalk.yellow(`${whole_part === 0 ? "" : `${whole_part} `}${numerator}/${denominator}${value.type ?? ""} (${val})`);
-		}
+		return numberToString(value);
 	}
 	if (isArrayType(value)) {
-		const v = value.elements.map(c => numberToString(c)).toString();
-		return `[${v}]`;
+		return value.elements.map(c => numberToString(c)).join(", ");
 	}
 	return "";
 }
-function numberToString(value: LabelledNumber) {
+export function numberToString(value: LabelledNumber) {
 	const val = chalk.yellow(`${value.num_value}${value.type ?? ""}`);
 	if (Number.isInteger(value.num_value)) {
 		return val;
+	} else {
+		const whole_part = Math.floor(value.num_value);
+		const decimal_part = value.num_value - whole_part;
+
+		const [numerator, denominator] = dec2frac(decimal_part);
+		return chalk.yellow(`${whole_part === 0 ? "" : `${whole_part} `}${numerator}/${denominator}${value.type ?? ""} (${val})`);
 	}
 }
 
