@@ -1,7 +1,7 @@
 import chalk from "chalk";
 
 import {CalcError, RuntimeError, Stdout} from "./error.js";
-import {Grouping, Literal, Unary, Expr, Binary, Expression, Print, Stmt, VarStmt, VarExpr, Call, Callable, Post, LabelledNumber, ArrayType, ArrayExpr, isArrayType, isLabelledNumber} from "./expr.js";
+import {Grouping, Literal, Unary, Expr, Binary, Expression, Print, Stmt, VarStmt, VarExpr, Call, Callable, Post, LabelledNumber, ArrayType, ArrayExpr, isArrayType, isLabelledNumber, CalcTypes, PostGrouping} from "./expr.js";
 import {Token, TokenType} from "./scanner.js";
 import {Environment} from "./environment.js";
 import {decimal_factorial} from "./math/factorial.js";
@@ -145,6 +145,9 @@ export class Interpreter {
 			case "ArrayExpr":
 				const a = expr as ArrayExpr;
 				return this.evaluateArray(a);
+			case "PostGrouping":
+				const pg = expr as PostGrouping;
+				return this.evaluatePostGrouping(pg);
 			default:
 				const t: Token = { type: TokenType.SEMICOLON, text: "???", literal: undefined };
 				throw this.runtimeError(new RuntimeError(t, "Something went terribly wrong."));
@@ -155,25 +158,46 @@ export class Interpreter {
 	public evaluateCallExpr(expr: Call): LabelledNumber | ArrayType {
 		const callee = expr.callee as VarExpr;
 		const callable = this.globals.get(callee.name);
+
 		if (callable === undefined) {
 			const runtime = new RuntimeError(expr.paren, `Cannot find a function named "${callee.name.text}".`);
 			throw this.runtimeError(runtime);
 		}
-		const args: LabelledNumber[] = [];
-		for (const arg of expr.arguments) {
-			const e = this.evaluate(arg);
-			if (isLabelledNumber(e)) {
-				args.push(e);
-			}
-		}
 		if (callable instanceof Callable) {
-			if (callable.variable_arity <= 0 && args.length !== callable.arity) {
-				const runtime = new RuntimeError(expr.paren, `Expected ${callable.arity} arguments but got ${args.length}.`);
+			// cursed checking.
+			if (callable.minimum_arity <= 0 && expr.arguments.length !== callable.parameter_types.length) {
+				const runtime = new RuntimeError(callee.name, `Expected ${callable.parameter_types.length} arguments but got ${expr.arguments.length}.`);
 				throw this.runtimeError(runtime);
 			}
-			if (callable.variable_arity > 0 && callable.variable_arity > args.length) {
-				const runtime = new RuntimeError(expr.paren, `Expected at least ${callable.variable_arity} argument.`);
+			if (callable.minimum_arity > 0 && callable.minimum_arity > expr.arguments.length) {
+				const runtime = new RuntimeError(callee.name, `Expected at least ${callable.minimum_arity} argument.`);
 				throw this.runtimeError(runtime);
+			}
+
+			const args: (LabelledNumber | ArrayType)[] = [];
+			for (let i = 0; i < expr.arguments.length; i++) {
+				const arg = expr.arguments[i];
+				const e = this.evaluate(arg);
+
+				let expected_arg_type: CalcTypes;
+				if (callable.minimum_arity > 0) {
+					expected_arg_type = callable.variable_parameter_type;
+				} else {
+					expected_arg_type = callable.parameter_types[i];
+				}
+
+				if (
+					isLabelledNumber(e) && expected_arg_type === "LabelledNumber"
+					|| isArrayType(e) && expected_arg_type === "ArrayType"
+				) {
+					args.push(e);
+				} else {
+					// inject the AST printer here for better error handling!
+					const expected_friendly = expected_arg_type === "LabelledNumber" ? "number" : "array";
+					const user_friendly = isLabelledNumber(e) ? "number" : "array";
+					const runtime = new RuntimeError(callee.name, `Arguments at #${i + 1} is type "${user_friendly}" when I expected the type "${expected_friendly}"`);
+					throw this.runtimeError(runtime);
+				}
 			}
 			try {
 				const num = callable.call(this, args);
@@ -200,19 +224,6 @@ export class Interpreter {
 		if (v === undefined) {
 			const runtime = new RuntimeError(expr.name, `The variable "${expr.name.text}" does not exist!`);
 			throw this.runtimeError(runtime);
-		}
-		// array
-		if (expr.indexer) {
-			if (isLabelledNumber(v)) {
-				const runtime = new RuntimeError(expr.name, `The indexer is a number.`);
-				throw this.runtimeError(runtime);
-			}
-			if (isArrayType(v)) {
-				const indexer = this.evaluate(expr.indexer);
-				if (isLabelledNumber(indexer)) {
-					return v.elements[indexer.num_value];
-				}
-			}
 		}
 		return v;
 	}
@@ -241,13 +252,6 @@ export class Interpreter {
 			}
 		}
 
-		if (expr.indexer) { // [1, 2, 3, 4][1]
-			const r = this.evaluate(expr.indexer);
-			if (isLabelledNumber(r)) {
-				return results[r.num_value];
-			}
-		}
-
 		return { elements: results };
 	}
 
@@ -264,6 +268,25 @@ export class Interpreter {
 		}
 		const runtime = new RuntimeError(expr.operator, `Wrong usage of postfix.`);
 		throw this.runtimeError(runtime);
+	}
+	public evaluatePostGrouping(expr: PostGrouping): LabelledNumber {
+		const left = this.evaluate(expr.left);
+		if (!isArrayType(left)) {
+			const runtime = new RuntimeError({ type: TokenType.LEFT_SQ, text: "[", literal: undefined }, `Left of indexer was not an array type.`)
+			throw this.runtimeError(runtime);
+		}
+
+		const index = this.evaluate(expr.index);
+		if (!isLabelledNumber(index)) {
+			const runtime = new RuntimeError({ type: TokenType.LEFT_SQ, text: "[", literal: undefined }, `Indexer is not a number.`)
+			throw this.runtimeError(runtime);
+		}
+		if (index.num_value > left.elements.length) {
+			const runtime = new RuntimeError({ type: TokenType.LEFT_SQ, text: "[", literal: undefined }, `Indexer is more than the length of the array.`)
+			throw this.runtimeError(runtime);
+		}
+
+		return left.elements[index.num_value];
 	}
 	public evaluateLiteral(expr: Literal): LabelledNumber {
 		return { type: expr.label, num_value: expr.value };

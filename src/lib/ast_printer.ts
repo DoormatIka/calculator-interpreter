@@ -1,4 +1,4 @@
-import {ArrayExpr, Binary, Call, Expr, Expression, Grouping, Literal, Post, Print, Stmt, Unary, VarExpr, VarStmt} from "./expr.js";
+import {ArrayExpr, Binary, Call, Expr, Expression, Grouping, Literal, Post, PostGrouping, Print, Stmt, Unary, VarExpr, VarStmt} from "./expr.js";
 
 /**
 	* Doesn't need to be re-initialized every run.
@@ -78,11 +78,6 @@ export class ASTPrinter {
 			case "VarExpr":
 				const var_node = node as VarExpr;
 				this.str += `[VarExpr] ${var_node.name.text}`;
-				if (var_node.indexer) {
-					this.str += `( [Indexer] `
-					this.parseExpr(var_node.indexer);
-					this.str += " )";
-				}
 				this.str += " )";
 				break;
 
@@ -93,6 +88,7 @@ export class ASTPrinter {
 				this.parseExpr(post_node.left);
 				this.str += " )";
 				break;
+
 			case "CallExpr":
 				const call = node as Call;
 				this.str += `( [Call] `;
@@ -102,6 +98,7 @@ export class ASTPrinter {
 				}
 				this.str += " )";
 				break;
+
 			case "ArrayExpr":
 				const arr = node as ArrayExpr;
 				this.str += `( [Array] `;
@@ -109,13 +106,16 @@ export class ASTPrinter {
 					this.parseExpr(elem);
 					this.str += ", "
 				}
-				if (arr.indexer) {
-					this.str += `( [Indexer] `
-					this.parseExpr(arr.indexer);
-					this.str += " )";
-				}
 				this.str += " )";
 				break;
+
+			case "PostGrouping":
+				const post_grouping = node as PostGrouping;
+				this.str += `( [Indexer] `
+				this.parseExpr(post_grouping);
+				this.str += " )";
+				break;
+
 			default:
 				console.log(`broo what happened ;~;`);
 				console.log(node);

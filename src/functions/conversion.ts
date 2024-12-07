@@ -3,11 +3,12 @@ import {WeightedGraph} from "../lib/graph.js";
 import {Interpreter} from "../lib/interpreter.js";
 import { RuntimeError } from "../lib/error.js";
 import { TokenType } from "../lib/scanner.js";
+import { CalcTypes } from "../lib/expr.js";
 
 
 export function createConversionFunction(fn_name: string, graph: WeightedGraph): Callable {
     const c = class extends Callable {
-        public arity: number = 1;
+		public parameter_types: CalcTypes[] = ["LabelledNumber"];
         call(interpreter: Interpreter, args: LabelledNumber[]) {
 			if (args[0].type === undefined) {
 				throw new RuntimeError({

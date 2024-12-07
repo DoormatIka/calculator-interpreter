@@ -9,10 +9,14 @@ export interface LabelledNumber {
 export interface ArrayType {
 	elements: LabelledNumber[],
 }
+
+export type CalcTypes = "LabelledNumber" | "ArrayType";
 export class Callable {
-	public arity: number = 0;
-	public variable_arity: number = 0; // 0 = disabled variable arity.
-	call(interpreter: Interpreter, args: LabelledNumber[]): LabelledNumber | ArrayType {
+	public minimum_arity: number = 0; // 0 = disabled any parameter counts
+	public variable_parameter_type: CalcTypes = "LabelledNumber";
+
+	public parameter_types: CalcTypes[] = [];
+	call(interpreter: Interpreter, args: (LabelledNumber | ArrayType)[]): LabelledNumber | ArrayType {
 		return {num_value: 0};
 	};
 }
@@ -30,7 +34,7 @@ export interface Expr {
 	| "LiteralExpr" | "UnaryExpr"
 	| "PostExpr" | "VarExpr"
 	| "CallExpr" 
-	| "ArrayExpr" | "ArrayIndex" // array index unused.
+	| "ArrayExpr" | "PostGrouping" // array index unused.
 	| "EquationExpr";
 };
 
@@ -42,7 +46,6 @@ export interface Binary extends Expr {
 
 export interface ArrayExpr extends Expr {
 	elements: Expr[],
-	indexer?: Expr,
 };
 
 export interface Grouping extends Expr {
@@ -57,14 +60,17 @@ export interface Unary extends Expr {
 	operator: Token,
 	right: Expr,
 };
+export interface PostGrouping extends Expr { // (left)[index]
+	index: Expr,
+	left: Expr,
+}
 export interface Post extends Expr {
 	operator: Token,
 	left: Expr,
 };
 
 export interface VarExpr extends Expr {
-	name: Token, // uses the variable.
-	indexer?: Expr,
+	name: Token,
 }
 export interface Call extends Expr {
 	callee: Expr,

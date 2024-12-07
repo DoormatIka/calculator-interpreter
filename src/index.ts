@@ -74,6 +74,30 @@ for (const unit of measurement_units) {
 }
 const printer = new ASTPrinter();
 
+async function one_time() {
+	try {
+		const tokenizer = new Tokenizer(out, "a = [1, 2]; a[0];");
+		const parsed_tokens = tokenizer.parse();
+
+		const parser = new RecursiveDescentParser(parsed_tokens, calc_err, measurement_units);
+		const tree: Stmt[] = parser.parse();
+		for (const node of tree) {
+			const p = printer.parseStmt(node);
+			console.log(p);
+		}
+
+		interpreter.interpret(tree);
+
+		console.log(out.get_stdout());
+		out.clear_stdout();
+		calc_err.resetErrors();
+		printer.clearStr();
+		interpreter.clear_variables();
+	} catch (error) {
+		console.log(error);
+	}
+}
+
 async function run_cli() {
 	for await (const answer of initquestions("[!!calc] >> ")) {
 		const tokenizer = new Tokenizer(out, answer as string);
@@ -82,7 +106,8 @@ async function run_cli() {
 		try {
 			const tree: Stmt[] = parser.parse();
 			for (const node of tree) {
-				printer.parseStmt(node);
+				const p = printer.parseStmt(node);
+				console.log(p);
 			}
 			if (tree && !calc_err.getHasError()) {
 				interpreter.interpret(tree);
@@ -97,4 +122,5 @@ async function run_cli() {
 	}
 }
 
-run_cli();
+// run_cli();
+one_time();

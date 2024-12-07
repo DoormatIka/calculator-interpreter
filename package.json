@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "npx tsc && node build/tests/test.js",
-	"start": "npx tsc && node build/src/index.js"
+	"start": "npx tsc && node build/src/index.js",
+	"debug": "npx tsc && node --inspect-brk build/src/index.js"
   },
   "author": "",
   "license": "ISC",

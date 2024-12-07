@@ -1,6 +1,6 @@
 
 import {CalcError, ParseError} from "./error.js";
-import {Binary, Expr, Grouping, Literal, Stmt, Unary, Print, Expression, VarStmt, VarExpr, Callable, Call, Post, ArrayExpr, isExprStmt} from "./expr.js";
+import {Binary, Expr, Grouping, Literal, Stmt, Unary, Print, Expression, VarStmt, VarExpr, Callable, Call, Post, ArrayExpr, isExprStmt, PostGrouping, isLabelledNumber} from "./expr.js";
 import {Token, TokenType} from "./scanner.js";
 
 
@@ -127,7 +127,7 @@ export class RecursiveDescentParser {
 		let expr = this.call();
 		if (this.match_and_advance([TokenType.BANG])) {
 			const operator = this.previous();
-			const post_obj: Post = {type: "PostExpr", operator: operator, left: expr };
+			const post_obj: Post = {type: "PostExpr", operator: operator, left: expr};
 			expr = post_obj;
 		}
 		return expr;
@@ -140,7 +140,13 @@ export class RecursiveDescentParser {
 				const token: Token = { type: TokenType.NUMBER, text: literal_expr.value.toString(), literal: literal_expr.value };
 				throw this.error(token, `A number can't be called.`);
 			}
-			expr = this.parse_arguments(expr);
+			return this.parse_arguments(expr);
+		}
+		if (this.match_and_advance([TokenType.LEFT_SQ])) {
+			const index = this.primary();
+			this.consume(TokenType.RIGHT_SQ, "Expected ']' after expression.");
+			const post_grouping: PostGrouping = {type: "PostGrouping", index: index, left: expr};
+			return post_grouping;
 		}
 		return expr;
 	}
@@ -198,27 +204,15 @@ export class RecursiveDescentParser {
 
 	private var() {
 		const v = this.previous();
-		const index = this.indexer();
-		const varexpr: VarExpr = { type: "VarExpr", name: v, indexer: index };
+		const varexpr: VarExpr = { type: "VarExpr", name: v };
 		return varexpr;
 	}
 	private array() {
 		const elements = this.parse_elements();
 		this.consume(TokenType.RIGHT_SQ, "Expected ']' after expression.");
 
-		const index = this.indexer();
-		const arr_obj: ArrayExpr = { elements: elements, type: "ArrayExpr", indexer: index };
+		const arr_obj: ArrayExpr = { elements: elements, type: "ArrayExpr" };
 		return arr_obj;
-	}
-
-	private indexer(): Expr | undefined {
-		let index;
-		if (this.match_and_advance([TokenType.LEFT_SQ])) {
-			const indexer = this.expression();
-			this.consume(TokenType.RIGHT_SQ, "Expected ']' after expression.");
-			index = indexer;
-		}
-		return index;
 	}
 
 	private grouping() {
