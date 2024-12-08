@@ -116,7 +116,10 @@ export class ASTPrinter {
 			case "PostGrouping":
 				const post_grouping = node as PostGrouping;
 				this.str += `( [Indexer] `
-				this.parseExpr(post_grouping);
+				this.parseExpr(post_grouping.left);
+				this.str += `[ `;
+				this.parseExpr(post_grouping.index);
+				this.str += ` ]`;
 				this.str += " )";
 				break;
 

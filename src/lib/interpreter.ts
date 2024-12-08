@@ -281,7 +281,7 @@ export class Interpreter {
 			const runtime = new RuntimeError({ type: TokenType.LEFT_SQ, text: "[", literal: undefined }, `Indexer is not a number.`)
 			throw this.runtimeError(runtime);
 		}
-		if (index.num_value > left.elements.length) {
+		if (index.num_value >= left.elements.length) {
 			const runtime = new RuntimeError({ type: TokenType.LEFT_SQ, text: "[", literal: undefined }, `Indexer is more than the length of the array.`)
 			throw this.runtimeError(runtime);
 		}
@@ -294,8 +294,12 @@ export class Interpreter {
 	public evaluateUnary(expr: Unary): LabelledNumber {
 		const right = this.evaluate(expr.right)!;
 		if (expr.operator.type === TokenType.MINUS) {
-			if (isLabelledNumber(right))
+			if (isLabelledNumber(right)) {
 				return { num_value: -right.num_value, type: right.type };
+			} else {
+				const runtime = new RuntimeError(expr.operator, `Right of unary was not a number.`);
+				throw this.runtimeError(runtime);
+			}
 		}
 
 		const runtime = new RuntimeError(expr.operator, `Error evaluating Unary expression.`);

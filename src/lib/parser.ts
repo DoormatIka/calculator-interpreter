@@ -34,6 +34,7 @@ export class RecursiveDescentParser {
 		try {
 			if (this.peek().type === TokenType.IDENTIFIER 
 					&& this.peek_next().type !== TokenType.LEFT_PAREN
+					&& this.peek_next().type !== TokenType.LEFT_SQ
 					&& this.peek_next().type !== TokenType.BANG
 			   )
 			{
@@ -168,10 +169,7 @@ export class RecursiveDescentParser {
 		if (this.match_and_advance([TokenType.IDENTIFIER])) {
 			const v = this.var();
 			if (this.match_and_advance([TokenType.LEFT_SQ])) {
-				const index = this.grouping();
-				this.consume(TokenType.RIGHT_SQ, "Expected ']' after expression.");
-				const post_grouping: PostGrouping = {type: "PostGrouping", index: index, left: v};
-				return post_grouping;
+				return this.index(v);
 			}
 			return v;
 		}
@@ -183,11 +181,18 @@ export class RecursiveDescentParser {
 			// LATEX PARSER HERE!!!
 		}
 		*/
-		if (this.match_and_advance([TokenType.LEFT_PAREN, TokenType.BAR, TokenType.LEFT_SQ])) {
+		if (this.match_and_advance([TokenType.LEFT_PAREN, TokenType.BAR])) {
 			return this.grouping();
 		}
 
 		throw this.error(this.peek(), "Expected expression.");
+	}
+	private index(left: Expr) {
+		const index = this.expression();
+		this.consume(TokenType.RIGHT_SQ, "Expected ']' after expression.")
+
+		const post_grouping: PostGrouping = {type: "PostGrouping", index: index, left: left};
+		return post_grouping;
 	}
 
 	private num() {
@@ -196,6 +201,9 @@ export class RecursiveDescentParser {
 		if (this.match_and_advance([TokenType.IDENTIFIER])) {
 			number_type = this.previous().text;
 		} // this will look like "NUMBER IDENTIFIER?"
+		if (this.peek().type === TokenType.LEFT_SQ) {
+			throw this.error(this.peek(), "Cannot index a number.");
+		} // for 1[0]
 		if (number_type !== undefined && !this.measurements.includes(number_type)) {
 			throw this.error(this.previous(), "Unknown measurement type.");
 		}
@@ -217,6 +225,9 @@ export class RecursiveDescentParser {
 		this.consume(TokenType.RIGHT_SQ, "Expected ']' after expression.");
 
 		const arr_obj: ArrayExpr = { elements: elements, type: "ArrayExpr" };
+		if (this.match_and_advance([TokenType.LEFT_SQ])) { // [1, 2, 3][0]
+			return this.index(arr_obj);
+		}
 		return arr_obj;
 	}
 

@@ -74,9 +74,9 @@ for (const unit of measurement_units) {
 }
 const printer = new ASTPrinter();
 
-async function one_time() {
+async function one_time(answer: string) {
 	try {
-		const tokenizer = new Tokenizer(out, "a = [1, 2]; a[0];");
+		const tokenizer = new Tokenizer(out, answer);
 		const parsed_tokens = tokenizer.parse();
 
 		const parser = new RecursiveDescentParser(parsed_tokens, calc_err, measurement_units);
@@ -122,5 +122,5 @@ async function run_cli() {
 	}
 }
 
-// run_cli();
-one_time();
+run_cli();
+
