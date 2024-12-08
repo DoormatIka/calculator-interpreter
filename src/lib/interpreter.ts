@@ -187,10 +187,11 @@ export class Interpreter {
 				}
 
 				if (
-					isLabelledNumber(e) && expected_arg_type === "LabelledNumber"
-					|| isArrayType(e) && expected_arg_type === "ArrayType"
+					expected_arg_type === "Any"
+					|| (isLabelledNumber(e) && expected_arg_type === "LabelledNumber"
+					|| isArrayType(e) && expected_arg_type === "ArrayType")
 				) {
-					args.push(e);
+					args.push(e as (LabelledNumber | ArrayType));
 				} else {
 					// inject the AST printer here for better error handling!
 					const expected_friendly = expected_arg_type === "LabelledNumber" ? "number" : "array";

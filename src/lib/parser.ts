@@ -140,12 +140,20 @@ export class RecursiveDescentParser {
 	private call() {
 		let expr = this.primary();
 		if (this.match_and_advance([TokenType.LEFT_PAREN])) {
-			if (expr.type !== "VarExpr") {
-				const literal_expr = expr as Literal;
-				const token: Token = { type: TokenType.NUMBER, text: literal_expr.value.toString(), literal: literal_expr.value };
-				throw this.error(token, `A number can't be called.`);
+			if (expr.type === "VarExpr") {
+				return this.parse_arguments(expr);
 			}
-			return this.parse_arguments(expr);
+			const literal_expr = expr as Literal;
+			const token: Token = { type: TokenType.NUMBER, text: literal_expr.value.toString(), literal: literal_expr.value };
+			throw this.error(token, `A number can't be called.`);
+		}
+		if (this.match_and_advance([TokenType.LEFT_SQ])) {
+			if (expr.type === "VarExpr" || expr.type === "ArrayExpr") {
+				return this.index(expr);
+			}
+			const literal_expr = expr as Literal;
+			const token: Token = { type: TokenType.NUMBER, text: literal_expr.value.toString(), literal: literal_expr.value };
+			throw this.error(token, `You can't index a type other than an array or a variable.`);
 		}
 		return expr;
 	}
@@ -168,9 +176,6 @@ export class RecursiveDescentParser {
 		}
 		if (this.match_and_advance([TokenType.IDENTIFIER])) {
 			const v = this.var();
-			if (this.match_and_advance([TokenType.LEFT_SQ])) {
-				return this.index(v);
-			}
 			return v;
 		}
 		if (this.match_and_advance([TokenType.LEFT_SQ])) {
@@ -201,9 +206,6 @@ export class RecursiveDescentParser {
 		if (this.match_and_advance([TokenType.IDENTIFIER])) {
 			number_type = this.previous().text;
 		} // this will look like "NUMBER IDENTIFIER?"
-		if (this.peek().type === TokenType.LEFT_SQ) {
-			throw this.error(this.peek(), "Cannot index a number.");
-		} // for 1[0]
 		if (number_type !== undefined && !this.measurements.includes(number_type)) {
 			throw this.error(this.previous(), "Unknown measurement type.");
 		}
@@ -225,9 +227,6 @@ export class RecursiveDescentParser {
 		this.consume(TokenType.RIGHT_SQ, "Expected ']' after expression.");
 
 		const arr_obj: ArrayExpr = { elements: elements, type: "ArrayExpr" };
-		if (this.match_and_advance([TokenType.LEFT_SQ])) { // [1, 2, 3][0]
-			return this.index(arr_obj);
-		}
 		return arr_obj;
 	}
 

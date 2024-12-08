@@ -10,12 +10,12 @@ export interface ArrayType {
 	elements: LabelledNumber[],
 }
 
-export type CalcTypes = "LabelledNumber" | "ArrayType";
+export type CalcTypes = "LabelledNumber" | "ArrayType" | "Any";
 export class Callable {
 	public minimum_arity: number = 0; // 0 = disabled any parameter counts
 	public variable_parameter_type: CalcTypes = "LabelledNumber";
-
 	public parameter_types: CalcTypes[] = [];
+
 	call(interpreter: Interpreter, args: (LabelledNumber | ArrayType)[]): LabelledNumber | ArrayType {
 		return {num_value: 0};
 	};

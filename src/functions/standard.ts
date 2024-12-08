@@ -1,8 +1,10 @@
-import {ArrayType, CalcTypes, Callable, LabelledNumber} from "../lib/expr.js";
+import {RuntimeError} from "../lib/error.js";
+import {ArrayType, CalcTypes, Callable, LabelledNumber, isArrayType, isLabelledNumber} from "../lib/expr.js";
 import {Interpreter} from "../lib/interpreter.js";
 import { factor } from "../lib/math/factor.js";
 import { gcd } from "../lib/math/gcd.js";
 import { lcm } from "../lib/math/lcm.js";
+import {Token, TokenType} from "../lib/scanner.js";
 
 export class Num extends Callable {
 	public parameter_types: CalcTypes[] = ["LabelledNumber"];
@@ -108,12 +110,40 @@ export class Factor extends Callable {
 }
 
 export class Sum extends Callable { // needs support for both "LabelledNumber" *and* "ArrayType"???
-	public minimum_arity: number = 2; // 0 = disabled any parameter counts
-	public variable_parameter_type: CalcTypes = "LabelledNumber";
+	public parameter_types: CalcTypes[] = ["ArrayType"];
 
-	public parameter_types: CalcTypes[] = [];
-	call(interpreter: Interpreter, args: (LabelledNumber | ArrayType)[]): LabelledNumber | ArrayType {
-		return {num_value: 0};
+	constructor() {super();}
+	call(interpreter: Interpreter, args: ArrayType[]): LabelledNumber {
+		let sum = 0;
+		for (const arg of args[0].elements) {
+			if (isLabelledNumber(arg)) {
+				sum += arg.num_value;
+			}
+		}
+		return {num_value: sum};
+	};
+}
+
+export class Union extends Callable {
+	public minimum_arity: number = 2;
+	public variable_parameter_type: CalcTypes = "ArrayType";
+
+	constructor() {super();}
+	call(interpreter: Interpreter, args: ArrayType[]): ArrayType {
+		const union = [...new Set([...args[0].elements, ...args[1].elements])];
+		return { elements: union };
+	};
+}
+
+export class Intersection extends Callable {
+	public minimum_arity: number = 2;
+	public variable_parameter_type: CalcTypes = "ArrayType";
+
+	constructor() {super();}
+	call(interpreter: Interpreter, args: ArrayType[]): ArrayType {
+		const set = new Set(args[1].elements);
+		const intersection = args[0].elements.filter(item => set.has(item));
+		return { elements: intersection };
 	};
 }
 

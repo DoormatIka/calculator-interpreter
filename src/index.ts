@@ -7,7 +7,7 @@ import {RecursiveDescentParser} from "./lib/parser.js";
 import {Tokenizer} from "./lib/scanner.js";
 import {CalcError, Stdout} from "./lib/error.js";
 import {Cosine, Log, Sine, Tangent, Base2Log, Base10Log, HyperbolicCosine, HyperbolicSine, HyperbolicTangent, InverseHyperbolicCosine, InverseHyperbolicSine, InverseHyperbolicTangent, InverseSine, InverseCosine, InverseTangent} from "./functions/trig.js";
-import {Abs, Clock, Sqrt, Ceiling, Floor, Round, Signum, Maximum, Minimum, Cbrt, Num, LCM, GCD, Factor } from "./functions/standard.js";
+import {Abs, Clock, Sqrt, Ceiling, Floor, Round, Signum, Maximum, Minimum, Cbrt, Num, LCM, GCD, Factor, Sum, Union, Intersection } from "./functions/standard.js";
 
 import {WeightedGraph} from "./lib/graph.js";
 import {createConversionFunction} from "./functions/conversion.js";
@@ -68,6 +68,9 @@ interpreter
 	.add_global("lcm", new LCM())
 	.add_global("gcd", new GCD())
 	.add_global("factor", new Factor())
+	.add_global("sum", new Sum())
+	.add_global("union", new Union())
+	.add_global("intersection", new Intersection());
 
 for (const unit of measurement_units) {
 	interpreter.add_global(unit, createConversionFunction(unit, graph));
