@@ -33,7 +33,9 @@ export class RecursiveDescentParser {
 	private declaration() {
 		try {
 			if (this.peek().type === TokenType.IDENTIFIER 
-					&& this.peek_next().type !== TokenType.LEFT_PAREN)
+					&& this.peek_next().type !== TokenType.LEFT_PAREN
+					&& this.peek_next().type !== TokenType.BANG
+			   )
 			{
 				return this.varDeclaration();
 			}
@@ -52,13 +54,15 @@ export class RecursiveDescentParser {
 	}
 	private varDeclaration() { // i = 10 + 10;
 		const name = this.consume(TokenType.IDENTIFIER, "Expected variable name.");
-		let initializer = undefined;
+
 		if (this.match_and_advance([TokenType.EQUALS])) {
-			initializer = this.expression();
+			const initializer = this.expression();
 			this.consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
+
+			const vardecl: VarStmt = { type: "Var", name: name, initializer: initializer };
+			return vardecl;
 		}
-		const vardecl: VarStmt = { type: "Var", name: name, initializer: initializer! };
-		return vardecl;
+		// note: initializers need to be checked.
 	}
 	private printStatement() {
 		if ([TokenType.EQUALS, TokenType.PLUS, TokenType.SLASH, TokenType.STAR].includes(this.peek().type)) {
@@ -142,12 +146,6 @@ export class RecursiveDescentParser {
 			}
 			return this.parse_arguments(expr);
 		}
-		if (this.match_and_advance([TokenType.LEFT_SQ])) {
-			const index = this.primary();
-			this.consume(TokenType.RIGHT_SQ, "Expected ']' after expression.");
-			const post_grouping: PostGrouping = {type: "PostGrouping", index: index, left: expr};
-			return post_grouping;
-		}
 		return expr;
 	}
 	private parse_arguments(callee: Expr) {
@@ -168,7 +166,14 @@ export class RecursiveDescentParser {
 			return this.num();
 		}
 		if (this.match_and_advance([TokenType.IDENTIFIER])) {
-			return this.var();
+			const v = this.var();
+			if (this.match_and_advance([TokenType.LEFT_SQ])) {
+				const index = this.grouping();
+				this.consume(TokenType.RIGHT_SQ, "Expected ']' after expression.");
+				const post_grouping: PostGrouping = {type: "PostGrouping", index: index, left: v};
+				return post_grouping;
+			}
+			return v;
 		}
 		if (this.match_and_advance([TokenType.LEFT_SQ])) {
 			return this.array();

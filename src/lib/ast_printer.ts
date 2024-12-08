@@ -28,7 +28,11 @@ export class ASTPrinter {
 				const v = node as VarStmt;
 				this.str += "( [VarDecl] ";
 				this.str += `${v.name.text} `;
-				this.parseExpr(v.initializer);
+				if (v.initializer) {
+					this.parseExpr(v.initializer);
+				} else {
+					this.str += "[Uninitialized]"
+				}
 				this.str += " )";
 				break;
 			case "Print":
