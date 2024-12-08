@@ -12,7 +12,10 @@ function formatPrint(value: LabelledNumber | ArrayType): string {
 		return numberToString(value);
 	}
 	if (isArrayType(value)) {
-		return value.elements.map(c => numberToString(c)).join(", ");
+		return value.elements
+			.sort((a, b) => {return a.num_value - b.num_value})
+			.map(c => numberToString(c))
+			.join(", ");
 	}
 	return "";
 }

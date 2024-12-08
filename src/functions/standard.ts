@@ -130,7 +130,21 @@ export class Union extends Callable {
 
 	constructor() {super();}
 	call(interpreter: Interpreter, args: ArrayType[]): ArrayType {
-		const union = [...new Set([...args[0].elements, ...args[1].elements])];
+		const union: LabelledNumber[] = [];
+
+		// Add all elements from the first array
+		for (const element of args[0].elements) {
+			union.push(element);
+		}
+
+		// Add elements from the second array if they are not already in the union
+		for (const element of args[1].elements) {
+			const exists = union.some(e => e.num_value === element.num_value);
+			if (!exists) {
+				union.push(element);
+			}
+		}
+
 		return { elements: union };
 	};
 }
@@ -141,8 +155,18 @@ export class Intersection extends Callable {
 
 	constructor() {super();}
 	call(interpreter: Interpreter, args: ArrayType[]): ArrayType {
-		const set = new Set(args[1].elements);
-		const intersection = args[0].elements.filter(item => set.has(item));
+		const intersection: LabelledNumber[] = []; // Initialize the intersection array
+
+		// Check each element of the first array against the second array
+		for (const element of args[0].elements) {
+			const existsInSecond = args[1].elements.some(e => e.num_value === element.num_value);
+			const alreadyInIntersection = intersection.some(e => e.num_value === element.num_value);
+
+			if (existsInSecond && !alreadyInIntersection) {
+				intersection.push(element);
+			}
+		}
+
 		return { elements: intersection };
 	};
 }

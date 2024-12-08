@@ -84,10 +84,11 @@ async function one_time(answer: string) {
 
 		const parser = new RecursiveDescentParser(parsed_tokens, calc_err, measurement_units);
 		const tree: Stmt[] = parser.parse();
+		/*
 		for (const node of tree) {
 			const p = printer.parseStmt(node);
-			console.log(p);
 		}
+		*/
 
 		interpreter.interpret(tree);
 
@@ -108,10 +109,11 @@ async function run_cli() {
 		const parser = new RecursiveDescentParser(parsed_tokens, calc_err, measurement_units);
 		try {
 			const tree: Stmt[] = parser.parse();
+			/*
 			for (const node of tree) {
 				const p = printer.parseStmt(node);
-				console.log(p);
 			}
+			*/
 			if (tree && !calc_err.getHasError()) {
 				interpreter.interpret(tree);
 			}
