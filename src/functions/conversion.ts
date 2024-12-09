@@ -11,11 +11,9 @@ export function createConversionFunction(fn_name: string, graph: WeightedGraph):
 		public parameter_types: CalcTypes[] = ["LabelledNumber"];
         call(interpreter: Interpreter, args: LabelledNumber[]) {
 			if (args[0].type === undefined) {
-				throw new RuntimeError({
-					type: TokenType.NUMBER,
-					text: args[0].num_value.toString(),
-					literal: args[0].num_value
-				}, `Specify whats being converted from. "${args[0].num_value}"`);
+				const r = structuredClone(args[0]);
+				r.type = fn_name; // assuming the function name would point to a number type. (which it should.)
+				return r;
 			}
             const path = graph.bfs(args[0].type, fn_name);
 			if (path === null) {

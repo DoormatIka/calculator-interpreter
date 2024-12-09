@@ -1,6 +1,6 @@
 
 import {CalcError, ParseError} from "./error.js";
-import {Binary, Expr, Grouping, Literal, Stmt, Unary, Print, Expression, VarStmt, VarExpr, Callable, Call, Post, ArrayExpr, isExprStmt, PostGrouping, isLabelledNumber} from "./expr.js";
+import {Binary, Expr, Grouping, Literal, Stmt, Unary, Print, Expression, VarStmt, VarExpr, Call, Post, ArrayExpr, isExprStmt, PostGrouping, isLabelledNumber} from "./expr.js";
 import {Token, TokenType} from "./scanner.js";
 
 
@@ -12,7 +12,7 @@ export class RecursiveDescentParser {
 	constructor(
 		private tokens: Token[],
 		private calc_error: CalcError,
-		private measurements: string[]
+		private measurements: string[],
 	) {}
 	public parse() {
 		const statements: Stmt[] = [];
@@ -175,8 +175,7 @@ export class RecursiveDescentParser {
 			return this.num();
 		}
 		if (this.match_and_advance([TokenType.IDENTIFIER])) {
-			const v = this.var();
-			return v;
+			return this.var();
 		}
 		if (this.match_and_advance([TokenType.LEFT_SQ])) {
 			return this.array();

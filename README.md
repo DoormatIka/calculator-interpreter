@@ -83,6 +83,8 @@ a = [5, 6, 7]; p a[1]; // 6
 - Max, Min of any numbers `max(5, 10); min(1, 0, 5);`
 - LCM, GCD of any numbers `lcm(10, 20, 3); gcd(9, 56);`
 - Factor a number `factor(60);`
+- Sum of an array `sum([1, 6, 90]);`
+- Union & Intersection of an array `union([1, 2], [2, 5]); intersection([1, 2, 5], [90, 1, 2]);`
 
 ## Supported Units
 ### Weight

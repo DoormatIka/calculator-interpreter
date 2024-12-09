@@ -25,6 +25,7 @@ export enum TokenType {
 
 	SEMICOLON, COMMA,
 	IDENTIFIER, EQUALS,
+	APOSTROPHE, QUOTATION,
 
 	EOF,
 }
@@ -43,6 +44,16 @@ export class Tokenizer {
 		p: TokenType.PRINT,
 		root: TokenType.ROOT,
 	};
+	private macros: TokenType[][] = [
+		[] 
+		// figure out how macros will be implemented in code.
+		// TokenType[][] will not be the data structure to be used.
+		//
+		// "string" search / searching through tokens to find the stuff that macros are supposed to replace
+		// m!4'5" is too cumbersome to type on a phone, so I won't be doing that.
+		//
+		// function() to return the string of resulting tokens
+	];
 
 	constructor(private out: Stdout, private str: string) {}
 

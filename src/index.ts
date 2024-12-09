@@ -81,6 +81,7 @@ async function one_time(answer: string) {
 	try {
 		const tokenizer = new Tokenizer(out, answer);
 		const parsed_tokens = tokenizer.parse();
+		// macro replacement here, after tokenizing, before parsing.
 
 		const parser = new RecursiveDescentParser(parsed_tokens, calc_err, measurement_units);
 		const tree: Stmt[] = parser.parse();
