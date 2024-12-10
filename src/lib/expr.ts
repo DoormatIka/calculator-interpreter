@@ -78,6 +78,8 @@ export interface Call extends Expr {
 	arguments: Expr[],
 }
 
+
+
 // Statements
 export interface Stmt {
 	type: "Expression" | "Var" | "Print"

@@ -11,7 +11,7 @@ import {Abs, Clock, Sqrt, Ceiling, Floor, Round, Signum, Maximum, Minimum, Cbrt,
 
 import {WeightedGraph} from "./lib/graph.js";
 import {createConversionFunction} from "./functions/conversion.js";
-import { edges } from "./data/units.js";
+import {edges} from "./data/units.js";
 import {Stmt} from "./lib/expr.js";
 
 // rewrite this into a more low level approach.

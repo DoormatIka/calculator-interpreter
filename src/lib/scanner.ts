@@ -84,6 +84,8 @@ export class Tokenizer {
 				case "^": this.add_token(TokenType.CARAT); break;
 				case "!": this.add_token(TokenType.BANG); break;
 				case "|": this.add_token(TokenType.BAR); break;
+				case `'`: this.add_token(TokenType.APOSTROPHE); break;
+				case `"`: this.add_token(TokenType.QUOTATION); break;
 				default:
 					if (this.is_digit(char)) {
 						this.number();

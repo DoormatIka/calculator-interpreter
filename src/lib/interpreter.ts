@@ -21,6 +21,9 @@ function formatPrint(value: LabelledNumber | ArrayType): string {
 }
 export function numberToString(value: LabelledNumber) {
 	const val = chalk.yellow(`${value.num_value}${value.type ?? ""}`);
+	if (value.type === "in") {
+		// convert into (value.num_value)in (x'y")
+	}
 	if (Number.isInteger(value.num_value)) {
 		return val;
 	} else {
