@@ -95,7 +95,7 @@ a = [5, 6, 7]; p a[1]; // 6
 - `Imperial: in (inches), nmi (nautical miles), ft (feet), yd (yard), mi (mile)`
 
 ## Doing
-- Support `cm(5'6"); p 5'6";`
+- Support `cm(5'6"); p 5'6";`, (in progress)
 
 ## Missing Features
 - Round by n decimals. `2 round 10.5237`

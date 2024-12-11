@@ -30,7 +30,7 @@ type MacroDefinition = {
 
 type MacroState = {start: number, end: number, variable_map: Map<string, number>};
 
-class MacroExpander {
+export class MacroExpander {
 	constructor(private macros: MacroDefinition[]) {}
 	/**
 	* Parses the macro.
@@ -55,7 +55,6 @@ class MacroExpander {
 		result: MacroToken[]
 	): Token[] | undefined {
 		const noted_macros: MacroState[] = [];
-		let match = true;
 
 		// Ensure the token and macro lists are compatible in size
 		if (tokens.length < initial.length) {
@@ -63,6 +62,7 @@ class MacroExpander {
 		}
 
 		for (let token_index = 0; token_index < tokens.length; token_index++) {
+			let match = true;
 			const variable_map = new Map<string, number>();
 			// concerning for performance ^^.
 			for (let macro_index = 0; macro_index < initial.length; macro_index++) {
@@ -75,6 +75,9 @@ class MacroExpander {
 						break;
 					}
 					variable_map.set(macro_token.variable, token.literal);
+				} else if (macro_token.token_type !== token.type || macro_token.text !== token.text) {
+					match = false;
+					break;
 				}
 			}
 
@@ -82,7 +85,7 @@ class MacroExpander {
 				variable_map.clear();
 			} else {
 				const start = token_index;
-				const end = token_index + (initial.length - 1)
+				const end = token_index + initial.length;
 				const state: MacroState = {start, end, variable_map};
 				noted_macros.push(state);
 			}
@@ -90,7 +93,7 @@ class MacroExpander {
 
 		// replace macros from noted_macros.
 
-		if (match) {
+		if (noted_macros.length > 0) {
 			const t = tokens.slice();
 			for (const macro of noted_macros) {
 				const r: Token[] = result.map(res_token => {
@@ -115,6 +118,16 @@ class MacroExpander {
 		}
 	}
 
+}
+
+class MacroScanner {
+	private start = 0;
+	private current = 0;
+	private tokens: MacroToken[] = [];
+	constructor() {}
+	public scan() {
+		
+	}
 }
 
 // $ would be the macro variables
@@ -147,7 +160,7 @@ const expander = new MacroExpander([
 	},
 ]);
 
-const input = `14'90" + 50`
+const input = `lcd(14'90" + 50)`
 
 const out = new Stdout();
 const scanner = new Tokenizer(out, input)
